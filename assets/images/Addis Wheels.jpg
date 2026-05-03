@@ -1,0 +1,17 @@
+<svg width="180" height="50" viewBox="0 0 180 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main wheel icon -->
+  <circle cx="25" cy="25" r="20" fill="#3B82F6"/>
+  <circle cx="25" cy="25" r="12" fill="white"/>
+  <circle cx="25" cy="25" r="6" fill="#3B82F6"/>
+  
+  <!-- Wheel spokes -->
+  <line x1="25" y1="13" x2="25" y2="37" stroke="#3B82F6" stroke-width="2"/>
+  <line x1="13" y1="25" x2="37" y2="25" stroke="#3B82F6" stroke-width="2"/>
+  
+  <!-- Text: AddisWheels -->
+  <text x="55" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#1F2937">Addis</text>
+  <text x="55" y="35" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="700" fill="#3B82F6">Wheels</text>
+  
+  <!-- Small accent line -->
+  <line x1="55" y1="40" x2="140" y2="40" stroke="#3B82F6" stroke-width="2"/>
+</svg> 
