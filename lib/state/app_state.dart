@@ -14,6 +14,7 @@ class AppState extends ChangeNotifier {
   static const _favoritesKey = 'favorites';
   static const _tripPlanKey = 'trip_plan_v2';
   static const _languageKey = 'language';
+  static const _themeModeKey = 'theme_mode';
   static const _categoryKey = 'category';
   static const _queryKey = 'query';
 
@@ -24,6 +25,7 @@ class AppState extends ChangeNotifier {
   String _selectedCategory = 'All';
   Set<String> _favoriteIds = <String>{};
   LanguageOption _language = LanguageOption.english;
+  ThemeMode _themeMode = ThemeMode.light;
 
   // Full trip plan
   TripPlan _tripPlan = TripPlan.defaultPlan();
@@ -34,6 +36,7 @@ class AppState extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   String get selectedCategory => _selectedCategory;
   LanguageOption get language => _language;
+  ThemeMode get themeMode => _themeMode;
   TripPlan get tripPlan => _tripPlan;
   String get activeTripName => _tripPlan.name;
 
@@ -67,7 +70,14 @@ class AppState extends ChangeNotifier {
     return total + 1200; // buffer for transport/accommodation
   }
 
-  List<String> get categories => const ['All', 'Nature', 'Culture', 'Historical', 'Cities'];
+  List<String> get categories {
+    final tags = <String>{};
+    for (final d in destinations) {
+      tags.addAll(d.tags);
+    }
+    final sorted = tags.toList()..sort();
+    return ['All', ...sorted];
+  }
 
   List<Destination> get filteredDestinations {
     return destinations.where((destination) {
@@ -116,6 +126,8 @@ class AppState extends ChangeNotifier {
     _language = _store.readString(_languageKey, fallback: 'english') == 'amharic'
         ? LanguageOption.amharic
         : LanguageOption.english;
+    final storedThemeMode = _store.readString(_themeModeKey, fallback: 'light');
+    _themeMode = storedThemeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
 
     final planJson = _store.readString(_tripPlanKey, fallback: '');
     if (planJson.isNotEmpty) {
@@ -281,6 +293,16 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setThemeMode(ThemeMode mode) {
+    _themeMode = mode;
+    _persistString(_themeModeKey, mode == ThemeMode.dark ? 'dark' : 'light');
+    notifyListeners();
+  }
+
+  void toggleThemeMode() {
+    setThemeMode(_themeMode == ThemeMode.dark ? ThemeMode.light : ThemeMode.dark);
+  }
+
   // ── Reset ──────────────────────────────────────────────
 
   Future<void> resetLocalData() async {
@@ -294,6 +316,7 @@ class AppState extends ChangeNotifier {
     await _store.remove(_queryKey);
     await _store.remove(_categoryKey);
     await _store.remove(_languageKey);
+    await _store.remove(_themeModeKey);
     notifyListeners();
   }
 

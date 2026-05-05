@@ -54,6 +54,7 @@ class _DestinationDetailsScreenState extends State<DestinationDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     final state = AppStateScope.watch(context);
+    final scheme = Theme.of(context).colorScheme;
     final inTrip = state.isInTrip(widget.destination.id);
     final saved = state.isFavorite(widget.destination.id);
     final photos = widget.destination.imagePaths.isNotEmpty
@@ -62,7 +63,7 @@ class _DestinationDetailsScreenState extends State<DestinationDetailsScreen> {
     final meta = _destinationMeta(widget.destination.id);
 
     return Scaffold(
-      backgroundColor: EthioColors.background,
+      backgroundColor: scheme.surface,
       bottomNavigationBar: _BottomActionArea(
         destination: widget.destination,
         inTrip: inTrip,
@@ -715,11 +716,12 @@ class _BottomActionArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.paddingOf(context).bottom + 16),
       decoration: BoxDecoration(
-        color: EthioColors.background,
-        border: Border(top: BorderSide(color: EthioColors.ink.withValues(alpha: 0.05))),
+        color: scheme.surface,
+        border: Border(top: BorderSide(color: scheme.outline.withValues(alpha: 0.18))),
       ),
       child: Row(
         children: [

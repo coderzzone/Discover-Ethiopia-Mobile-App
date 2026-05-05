@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../models/app_models.dart';
-import '../widgets/ui_components.dart';
 
 class BookingDemoScreen extends StatelessWidget {
   const BookingDemoScreen({super.key, required this.service});
@@ -10,11 +9,12 @@ class BookingDemoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: EthioColors.background,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text('Demo Booking', style: TextStyle(fontWeight: FontWeight.w800)),
-        backgroundColor: EthioColors.background,
+        backgroundColor: scheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
@@ -30,7 +30,7 @@ class BookingDemoScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               service.subtitle,
-              style: const TextStyle(color: EthioColors.mutedInk, fontWeight: FontWeight.w600),
+              style: TextStyle(color: scheme.onSurface.withValues(alpha: 0.72), fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 24),
             _Field(label: 'Full name', value: 'Demo User'),
@@ -73,20 +73,21 @@ class _Field extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.15)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label.toUpperCase(),
-            style: const TextStyle(fontSize: 11, color: EthioColors.mutedInk, fontWeight: FontWeight.w800),
+            style: TextStyle(fontSize: 11, color: scheme.onSurface.withValues(alpha: 0.72), fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 4),
           Text(value, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700)),

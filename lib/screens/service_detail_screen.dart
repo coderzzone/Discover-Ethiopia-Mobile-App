@@ -37,12 +37,13 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final photos = widget.service.imagePaths.isNotEmpty
         ? widget.service.imagePaths
         : ['assets/images/addisababa.jpg']; // Fallback
 
     return Scaffold(
-      backgroundColor: EthioColors.background,
+      backgroundColor: scheme.surface,
       bottomNavigationBar: _BottomActionArea(service: widget.service),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
@@ -102,7 +103,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           colors: [
                             Colors.black.withValues(alpha: 0.5),
                             Colors.transparent,
-                            EthioColors.background.withValues(alpha: 0.95),
+                            scheme.surface.withValues(alpha: 0.95),
                           ],
                         ),
                       ),
@@ -149,7 +150,12 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           children: [
                             Text(
                               widget.service.name,
-                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800, height: 1.1),
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w800,
+                                height: 1.1,
+                                color: scheme.onSurface,
+                              ),
                             ),
                             const SizedBox(height: 8),
                             Container(
@@ -181,7 +187,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                         decoration: BoxDecoration(
-                          color: EthioColors.primaryContainer,
+                          color: scheme.primaryContainer,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Column(
@@ -190,7 +196,11 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                             const SizedBox(height: 2),
                             Text(
                               widget.service.rating.toString(),
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 16,
+                                color: scheme.onPrimaryContainer,
+                              ),
                             ),
                           ],
                         ),
@@ -205,7 +215,11 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                     const SizedBox(height: 12),
                     Text(
                       widget.service.description,
-                      style: const TextStyle(fontSize: 15, color: EthioColors.ink, height: 1.6),
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: scheme.onSurface,
+                        height: 1.6,
+                      ),
                     ),
                     const SizedBox(height: 28),
                   ],
@@ -221,9 +235,9 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: scheme.surfaceContainerLowest,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: EthioColors.outline.withValues(alpha: 0.1)),
+                            border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
                           ),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -243,10 +257,10 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                      color: EthioColors.surfaceContainerLowest,
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: EthioColors.outline.withValues(alpha: 0.1)),
-                    ),
+                    color: EthioColors.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
+                  ),
                     child: Row(
                       children: [
                         Container(
@@ -258,13 +272,19 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           child: Icon(Icons.phone_rounded, color: widget.service.brandColor, size: 20),
                         ),
                         const SizedBox(width: 14),
-                        const Expanded(
+                        Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Contact Information', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
-                              SizedBox(height: 2),
-                              Text('+251 911 234 567', style: TextStyle(color: EthioColors.mutedInk, fontSize: 13)),
+                              const Text('Contact Information', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+                              const SizedBox(height: 2),
+                              Text(
+                                '+251 911 234 567',
+                                style: TextStyle(
+                                  color: scheme.onSurface.withValues(alpha: 0.75),
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -318,10 +338,11 @@ class _BottomActionArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.paddingOf(context).bottom + 16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.04),
@@ -339,11 +360,19 @@ class _BottomActionArea extends StatelessWidget {
               children: [
                 Text(
                   'Starting from',
-                  style: TextStyle(color: EthioColors.mutedInk, fontSize: 12, fontWeight: FontWeight.w600),
+                  style: TextStyle(
+                    color: scheme.onSurface.withValues(alpha: 0.72),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 Text(
                   service.subtitle,
-                  style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 18,
+                    color: scheme.onSurface,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -12,6 +12,7 @@ class FavoritesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = AppStateScope.watch(context);
     final favorites = state.favorites;
+    final scheme = Theme.of(context).colorScheme;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
@@ -40,9 +41,9 @@ class FavoritesScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: EthioColors.surfaceContainerLowest,
+              color: scheme.surfaceContainerLowest,
               borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+              border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

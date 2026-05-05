@@ -41,11 +41,12 @@ class _InsightDetailScreenState extends State<InsightDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final insight = widget.insight;
+    final scheme = Theme.of(context).colorScheme;
     final photos = insight.imagePaths;
     final meta = _insightMeta(insight.id);
 
     return Scaffold(
-      backgroundColor: EthioColors.background,
+      backgroundColor: scheme.surface,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [

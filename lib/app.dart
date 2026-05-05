@@ -8,8 +8,8 @@ import 'screens/map_screen.dart';
 import 'screens/directory_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/trip_planner_screen.dart';
+import 'screens/ai_trip_planner_screen.dart';
 import 'theme/app_theme.dart';
-import 'widgets/ui_components.dart';
 import 'models/app_models.dart';
 import 'screens/destination_details_screen.dart';
 import 'state/app_localization.dart';
@@ -23,23 +23,28 @@ class EthioExploreApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppStateScope(
       state: state,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Discover Ethiopia',
-        theme: buildEthioExploreTheme(),
-        scrollBehavior: const MaterialScrollBehavior().copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.trackpad,
-            PointerDeviceKind.stylus,
-            PointerDeviceKind.unknown,
+      child: AnimatedBuilder(
+        animation: state,
+        builder: (context, _) => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Discover Ethiopia',
+          theme: buildEthioExploreTheme(),
+          darkTheme: buildEthioExploreDarkTheme(),
+          themeMode: state.themeMode,
+          scrollBehavior: const MaterialScrollBehavior().copyWith(
+            dragDevices: {
+              PointerDeviceKind.touch,
+              PointerDeviceKind.mouse,
+              PointerDeviceKind.trackpad,
+              PointerDeviceKind.stylus,
+              PointerDeviceKind.unknown,
+            },
+          ),
+          home: const SplashScreen(),
+          routes: {
+            EthioExploreShell.routeName: (_) => const EthioExploreShell(),
           },
         ),
-        home: const SplashScreen(),
-        routes: {
-          EthioExploreShell.routeName: (_) => const EthioExploreShell(),
-        },
       ),
     );
   }
@@ -60,6 +65,7 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
   final _pages = const [
     HomeScreen(),
     TripPlannerScreen(),
+    AiTripPlannerScreen(),
     FavoritesScreen(),
     DirectoryScreen(),
   ];
@@ -67,30 +73,42 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: EthioColors.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         centerTitle: false,
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: EthioColors.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         surfaceTintColor: Colors.transparent,
         titleSpacing: 20,
-        title: const Text(
+        title: Text(
           'Discover Ethiopia',
           style: TextStyle(
-            color: EthioColors.primary,
+            color: Theme.of(context).colorScheme.primary,
             fontSize: 24,
             fontWeight: FontWeight.w800,
             letterSpacing: -0.4,
           ),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Toggle dark mode',
+            onPressed: () => AppStateScope.read(context).toggleThemeMode(),
+            icon: Icon(
+              AppStateScope.watch(context).themeMode == ThemeMode.dark
+                  ? Icons.dark_mode_rounded
+                  : Icons.light_mode_rounded,
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: IndexedStack(index: _selectedIndex, children: _pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => setState(() => _selectedIndex = index),
-        backgroundColor: EthioColors.surfaceContainerLowest,
-        indicatorColor: EthioColors.primaryContainer.withValues(alpha: 0.15),
+        backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+        indicatorColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.28),
         height: 76,
         destinations: [
           NavigationDestination(
@@ -102,6 +120,11 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
             icon: const Icon(Icons.route_outlined),
             selectedIcon: const Icon(Icons.route),
             label: AppLocalization.tr(context, 'trips'),
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.auto_awesome_outlined),
+            selectedIcon: Icon(Icons.auto_awesome),
+            label: 'AI Planner',
           ),
           NavigationDestination(
             icon: const Icon(Icons.bookmark_outline),

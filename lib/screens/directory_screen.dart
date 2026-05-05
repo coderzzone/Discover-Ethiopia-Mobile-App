@@ -10,12 +10,13 @@ class DirectoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: EthioColors.background,
+      backgroundColor: scheme.surface,
       appBar: AppBar(
         title: const Text('Directory & Services', style: TextStyle(fontWeight: FontWeight.w800)),
         centerTitle: false,
-        backgroundColor: EthioColors.background,
+        backgroundColor: scheme.surface,
         elevation: 0,
         scrolledUnderElevation: 0,
       ),
@@ -87,7 +88,13 @@ class DirectoryScreen extends StatelessWidget {
                 children: [
                   Text(title, style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800)),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: const TextStyle(color: EthioColors.mutedInk, fontSize: 13)),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.72),
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -198,11 +205,12 @@ class _DirectoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.1)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -232,7 +240,11 @@ class _DirectoryCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         title,
-                        style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          color: scheme.onSurface,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -243,7 +255,11 @@ class _DirectoryCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           rating.toStringAsFixed(1),
-                          style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
+                          style: TextStyle(
+                            fontWeight: FontWeight.w800,
+                            fontSize: 12,
+                            color: scheme.onSurface,
+                          ),
                         ),
                       ],
                     ),
@@ -252,7 +268,10 @@ class _DirectoryCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   subtitle,
-                  style: const TextStyle(color: EthioColors.mutedInk, fontSize: 12),
+                  style: TextStyle(
+                    color: scheme.onSurface.withValues(alpha: 0.72),
+                    fontSize: 12,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

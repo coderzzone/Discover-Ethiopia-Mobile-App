@@ -22,6 +22,8 @@ dependencies:
 
   # ── URL launcher (for map directions) ──────────────────
   url_launcher: ^6.3.0
+  http: ^1.2.2
+  geolocator: ^13.0.2
 
 dev_dependencies:
   flutter_test:

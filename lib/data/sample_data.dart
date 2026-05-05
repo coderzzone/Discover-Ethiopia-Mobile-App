@@ -16,14 +16,11 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'October to March',
     imageUrl: 'assets/images/lalibela.jpg',
     imagePaths: [
-      'assets/images/lalibela.jpg',
-      'assets/images/aksum.jpg',
-      'assets/images/gondar.jpg',
-    ],
+      'assets/images/lalibela1.jpg','assets/images/lalibela2.jpg','assets/images/lalibela3.jpg','assets/images/lalibela4.jpg','assets/images/lalibela5.jpg',],
     accent: EthioColors.secondary,
     lat: 12.0315,
     lng: 39.0440,
-    tags: ['Historical', 'Culture'],
+    tags: ['Historical', 'Culture', 'Spiritual'],
   ),
   const Destination(
     id: 'simien_mountains',
@@ -37,14 +34,11 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'October to May',
     imageUrl: 'assets/images/simien.jpg',
     imagePaths: [
-      'assets/images/simien.jpg',
-      'assets/images/bale.jpg',
-      'assets/images/gheralta.jpg',
-    ],
+      'assets/images/simien0.jpg','assets/images/simien1.jpg', 'assets/images/simien2.jpg','assets/images/simien2.jpg','assets/images/simien3.jpg','assets/images/simien4.jpg','assets/images/simien5.jpg',],
     accent: EthioColors.secondary,
     lat: 13.2500,
     lng: 38.0833,
-    tags: ['Nature'],
+    tags: ['Nature', 'Adventure'],
   ),
   const Destination(
     id: 'blue_nile_falls',
@@ -58,14 +52,11 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'August to January',
     imageUrl: 'assets/images/nilefalls.jpg',
     imagePaths: [
-      'assets/images/nilefalls.jpg',
-      'assets/images/laketana.jpg',
-      'assets/images/awash.jpg',
-    ],
+      'assets/images/nilefalls0.jpg','assets/images/nilefalls1.jpg','assets/images/nilefalls2.jpg','assets/images/nilefalls3.jpg','assets/images/nilefalls4.jpg','assets/images/nilefalls5.jpg',],
     accent: EthioColors.tertiary,
     lat: 11.4833,
     lng: 37.5833,
-    tags: ['Nature'],
+    tags: ['Nature', 'Wildlife'],
   ),
   const Destination(
     id: 'aksum',
@@ -79,10 +70,7 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'October to April',
     imageUrl: 'assets/images/aksum.jpg',
     imagePaths: [
-      'assets/images/aksum.jpg',
-      'assets/images/lalibela.jpg',
-      'assets/images/gondar.jpg',
-    ],
+      'assets/images/aksum0.jpg','assets/images/aksum1.jpg','assets/images/aksum2.jpg','assets/images/aksum3.png','assets/images/aksum4.jpg','assets/images/aksum5.jpg',],
     accent: EthioColors.primary,
     lat: 14.1300,
     lng: 38.7200,
@@ -100,14 +88,12 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'November to February',
     imageUrl: 'assets/images/danakil.jpg',
     imagePaths: [
-      'assets/images/danakil.jpg',
-      'assets/images/ertaale.jpg',
-      'assets/images/awash.jpg',
+      'assets/images/danakil0.jpg','assets/images/ertaale.jpg','assets/images/danakil1.jpg','assets/images/danakil2.jpg','assets/images/danakil3.jpg','assets/images/danakil4.jpg','assets/images/danakil5.jpg',
     ],
     accent: EthioColors.primary,
     lat: 14.2417,
     lng: 40.3000,
-    tags: ['Nature'],
+    tags: ['Nature', 'Adventure'],
   ),
   const Destination(
     id: 'harar',
@@ -121,10 +107,7 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'September to May',
     imageUrl: 'assets/images/harar.jpg',
     imagePaths: [
-      'assets/images/harar.jpg',
-      'assets/images/addisababa.jpg',
-      'assets/images/omovalley.jpg',
-    ],
+      'assets/images/harar0.jpg','assets/images/harar1.jpg','assets/images/harar2.jpg','assets/images/harar3.jpg','assets/images/harar4.jpg','assets/images/harar5.jpg',],
     accent: EthioColors.ink,
     lat: 9.3127,
     lng: 42.1234,
@@ -142,14 +125,12 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'June to September',
     imageUrl: 'assets/images/omovalley.jpg',
     imagePaths: [
-      'assets/images/omovalley.jpg',
-      'assets/images/harar.jpg',
-      'assets/images/addisababa.jpg',
+      'assets/images/omovalley0.jpg','assets/images/omovalley1.jpg','assets/images/omovalley2.jpg','assets/images/omovalley3.jpg','assets/images/omovalley4.jpg','assets/images/omovalley5.jpg',
     ],
     accent: EthioColors.tertiary,
     lat: 5.8544,
     lng: 36.0833,
-    tags: ['Culture'],
+    tags: ['Culture', 'Adventure'],
   ),
   const Destination(
     id: 'gondar',
@@ -163,10 +144,7 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'September to May',
     imageUrl: 'assets/images/gondar.jpg',
     imagePaths: [
-      'assets/images/gondar.jpg',
-      'assets/images/lalibela.jpg',
-      'assets/images/aksum.jpg',
-    ],
+      'assets/images/gondar0.jpg','assets/images/gondar1.jpg','assets/images/gondar2.jpg','assets/images/gondar3.jpg','assets/images/gondar4.jpg','assets/images/gondar5.jpg',    ],
     accent: EthioColors.secondary,
     lat: 12.6036,
     lng: 37.4601,
@@ -184,14 +162,12 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'November to March',
     imageUrl: 'assets/images/bale.jpg',
     imagePaths: [
-      'assets/images/bale.jpg',
-      'assets/images/simien.jpg',
-      'assets/images/sofomar.jpg',
+      'assets/images/bale0.jpg','assets/images/bale1.jpg','assets/images/bale2.jpg','assets/images/bale3.jpg','assets/images/bale4.jpg','assets/images/bale5.jpg',
     ],
     accent: EthioColors.secondary,
     lat: 6.8500,
     lng: 39.9167,
-    tags: ['Nature'],
+    tags: ['Nature', 'Wildlife'],
   ),
   const Destination(
     id: 'gheralta',
@@ -205,14 +181,12 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'October to April',
     imageUrl: 'assets/images/gheralta.jpg',
     imagePaths: [
-      'assets/images/gheralta.jpg',
-      'assets/images/simien.jpg',
-      'assets/images/danakil.jpg',
+      'assets/images/gheralta0.jpg','assets/images/gheralta1.jpg','assets/images/gheralta2.jpg','assets/images/gheralta3.jpg','assets/images/gheralta4.jpg','assets/images/gheralta5.jpg',
     ],
     accent: EthioColors.tertiary,
     lat: 13.8500,
     lng: 39.4833,
-    tags: ['Historical', 'Nature'],
+    tags: ['Historical', 'Nature', 'Adventure', 'Spiritual'],
   ),
   const Destination(
     id: 'addis_ababa',
@@ -226,17 +200,13 @@ final List<Destination> sampleDestinations = [
     bestTimeToVisit: 'October to May',
     imageUrl: 'assets/images/addisababa.jpg',
     imagePaths: [
-      'assets/images/addisababa.jpg',
-      'assets/images/harar.jpg',
-      'assets/images/gondar.jpg',
-    ],
+      'assets/images/addisababa0.jpg','assets/images/addisababa1.jpg','assets/images/addisababa2.jpg','assets/images/addisababa3.jpg','assets/images/addisababa4.jpg','assets/images/addisababa5.jpg','assets/images/addisababa6.jpg'],
     accent: EthioColors.ink,
     lat: 9.0320,
     lng: 38.7469,
     tags: ['Cities', 'Culture'],
   ),
 ];
-
 // --- CULTURAL INSIGHTS ---
 final List<CulturalInsight> sampleInsights = [
   const CulturalInsight(
@@ -254,9 +224,7 @@ final List<CulturalInsight> sampleInsights = [
     icon: Icons.local_fire_department_rounded,
     color: EthioColors.secondary,
     imagePaths: [
-      'assets/images/addisababa.jpg',
-      'assets/images/gondar.jpg',
-      'assets/images/lalibela.jpg',
+      'assets/images/Meskelfest0.jpg','assets/images/Meskelfest1.jpg','assets/images/Meskelfest2.jpg','assets/images/Meskelfest3.jpg','assets/images/Meskelfest4.jpg','assets/images/Meskelfest5.jpg','assets/images/Meskelfest6.jpg','assets/images/Meskelfest7.jpg','assets/images/Meskelfest8.jpg','assets/images/Meskelfest9.jpg',
     ],
     entryFee: 'Free',
     duration: '2 days',
@@ -275,11 +243,7 @@ final List<CulturalInsight> sampleInsights = [
     lng: 36.8333,
     icon: Icons.coffee_rounded,
     color: EthioColors.tertiary,
-    imagePaths: [
-      'assets/images/harar.jpg',
-      'assets/images/addisababa.jpg',
-      'assets/images/omovalley.jpg',
-    ],
+    imagePaths: ['assets/images/EthiopianCC0.jpg','assets/images/EthiopianCC1.jpg','assets/images/EthiopianCC2.jpg',],
     entryFee: 'Free (gift of coffee beans appreciated)',
     duration: '30–60 minutes per ceremony',
   ),
@@ -297,11 +261,7 @@ final List<CulturalInsight> sampleInsights = [
     lng: 38.0833,
     icon: Icons.landscape_rounded,
     color: EthioColors.primary,
-    imagePaths: [
-      'assets/images/simien.jpg',
-      'assets/images/gheralta.jpg',
-      'assets/images/bale.jpg',
-    ],
+    imagePaths: ['assets/images/simien_trekking.jpg',],
     entryFee: 'ETB 850 / day',
     duration: '3–7 days',
   ),
@@ -320,13 +280,106 @@ final List<CulturalInsight> sampleInsights = [
     icon: Icons.water_drop_rounded,
     color: EthioColors.ink,
     imagePaths: [
-      'assets/images/gondar.jpg',
-      'assets/images/lalibela.jpg',
-      'assets/images/aksum.jpg',
-    ],
+      'assets/images/timkat0.jpg','assets/images/timkat1.jpg','assets/images/timkat2.png','assets/images/timkat3.jpg','assets/images/timkat4.jpg'],
     entryFee: 'Free',
     duration: '2 days',
   ),
+  // Add these to your sampleInsights list
+
+const CulturalInsight(
+  id: 'enkuatatsh',
+  label: 'New Year',
+  title: 'Enkutatash — Ethiopian New Year',
+  subtitle: 'Celebrating the end of the rainy season',
+  description: 'Enkutatash (Ethiopian New Year) falls on Meskerem 1, which corresponds to September 11 (or 12 in leap years). The celebration marks both the end of the heavy rains and the return of the bright yellow Meskel daisies carpeting the highlands. Families gather, children receive small gifts, and households enjoy traditional doro wat and freshly baked bread.',
+  history: 'According to tradition, Enkutatash commemorates the return of the Queen of Sheba from her visit to King Solomon in Jerusalem, when her ministers greeted her with jewels to replenish her treasury. The day remained significant through Axumite times and gained Christian meaning as also marking the feast of St. John the Baptist.',
+  tipText: 'Children sing and go door-to-door giving bouquets of flowers to neighbors. In Addis, Jan Meda (race track) hosts huge celebrations with football and athletics. Give small coins to singing children — it\'s tradition rather than begging.',
+  when: 'September 11 (Meskerem 1)',
+  where: 'Nationwide — Addis Ababa\'s Jan Meda',
+  lat: 9.0167,
+  lng: 38.7500,
+  icon: Icons.calendar_month_rounded,
+  color: EthioColors.primary,
+  imagePaths: ['assets/images/enkuatatsh.jpg'],
+  entryFee: 'Free',
+  duration: '1 day',
+),
+
+const CulturalInsight(
+  id: 'inka',
+  label: 'Social Rituals',
+  title: 'Inka Coffee — The Third Cup',
+  subtitle: 'Baraka — blessing in a coffee cup',
+  description: 'The Ethiopian coffee ceremony proceeds through three distinct cups: Abol (first cup, the most potent), Tona (second cup, softened with water), and Baraka (third cup, the blessing). The number three is sacred in Ethiopian Orthodox tradition (Trinity). Each cup has increasing social significance, with the third cup representing the transmission of blessing from host to guest.',
+  history: 'The three-stage ceremony emerged as coffee spread across Ethiopian society from the 15th century onward. The ritual remains so respected that declining the third cup can be seen as rejecting the host\'s goodwill.',
+  tipText: 'Always accept the third cup if offered. The progression from strong to lighter coffee mirrors the conversation arc: serious topics first, then lighter talk, then jokes and stories. Expect popcorn, roasted barley, or peanuts as accompaniments.',
+  when: 'Daily, usually late morning and after dinner',
+  where: 'Every household, cafe, and specialty buna bet (coffee house)',
+  lat: 9.0000,
+  lng: 38.0000,
+  icon: Icons.emoji_food_beverage_rounded,
+  color: EthioColors.tertiary,
+  imagePaths: ['assets/images/Baraka.jpg'],
+  entryFee: 'Free - gift of sugar or coffee beans polite',
+  duration: 'Approximately 1 hour',
+),
+
+const CulturalInsight(
+  id: 'gena',
+  label: 'Religious Festival',
+  title: 'Gena — Ethiopian Christmas',
+  subtitle: 'A solemn celebration in white',
+  description: 'Celebrated on January 7, Gena (Christmas) is Ethiopia\'s most important religious festival. Unlike Western commercial celebrations, Gena remains deeply spiritual: worshippers dress all in white, attend all-night church services, and conduct candlelit processions around the church building. The liturgy includes ancient hymns sung in Ge\'ez, the liturgical language.',
+  history: 'The name Gena likely derives from "Gennana", meaning "imminent" in Ge\'ez. The festival followed Ethiopian acceptance of Christianity in the 4th century. Gena falls on Tier 29 in the Ethiopian calendar, corresponding to January 7. Traditional Gena games, the earliest form of field hockey, were played during Emperor Menelik II\'s time.',
+  tipText: 'Lalibela\'s Gena celebration is legendary — book accommodation 3+ months ahead. The service lasts 3+ hours beginning at 4 AM. Wear white if possible, dress modestly, remove shoes before entering any church. January 7 is the correct date.',
+  when: 'January 7 (Ethiopian calendar: Tier 29)',
+  where: 'Nationwide, most spectacular in Lalibela',
+  lat: 12.0300,
+  lng: 39.0400,
+  icon: Icons.church_rounded,
+  color: EthioColors.secondary,
+  imagePaths: ['assets/images/gena.jpg', 'assets/images/gena1.jpg'],
+  entryFee: 'Free',
+  duration: '1 day + overnight service',
+),
+
+const CulturalInsight(
+  id: 'hida',
+  label: 'Oral Heritage',
+  title: 'Hida — Proverbs as Social Compass',
+  subtitle: 'The wisdom literature of Ethiopia',
+  description: 'Ethiopia has one of sub-Saharan Africa\'s richest traditions of proverbs (hida in Amharic). Proverbs govern social conduct, resolve disputes, teach children, and add layers of meaning to conversation. From "When the great river is noisy, it carries little water" to "A donkey that carries salt and a donkey that carries cloth have the same burden," these sayings reveal Ethiopian values of wisdom over wealth, community, and humility.',
+  history: 'Proverbs appear in Ethiopia\'s earliest Ge\'ez literature, including the 6th-century "Physiologus." Fetha Nagast (Law of Kings) incorporated legal proverbs. In rural areas, elders settle disputes primarily through proverbs rather than formal court systems.',
+  tipText: 'Ethiopians appreciate visitors who use or reference proverbs. Say "Amarek tayek" ("ask the wise") before a request shows cultural awareness. Avoid using proverbs aggressively — they\'re teaching tools, not weapons.',
+  when: 'Daily conversation',
+  where: 'Every social interaction',
+  lat: 9.0000,
+  lng: 38.0000,
+  icon: Icons.auto_awesome_rounded,
+  color: EthioColors.ink,
+  imagePaths: ['assets/images/hida.png'],
+  entryFee: 'N/A',
+  duration: 'Lifelong learning',
+),
+
+const CulturalInsight(
+  id: 'gursha',
+  label: 'Culinary Tradition',
+  title: 'Gursha — The Feeding Ritual',
+  subtitle: 'A bite of love and respect',
+  description: 'Gursha is one of Ethiopia\'s most intimate and beloved traditions — the act of feeding another person by hand. During a meal, a diner will roll a piece of injera around a particularly flavorful morsel and feed it into another person\'s mouth. This gesture symbolizes love, respect, friendship, and care. The larger the gursha, the greater the affection.',
+  history: 'The tradition dates to times when poisoning at feasts was a concern in royal courts; feeding someone showed absolute trust. Over centuries, gursha evolved into a universal sign of hospitality. At weddings, families exchange enormous gurshas as family union symbols.',
+  tipText: 'If someone offers you gursha, open your mouth and accept — refusing is highly insulting. Return gursha to show reciprocal affection. The largest gursha at a meal goes to the most respected person. During Timkat and Meskel, couples exchange gurshas as blessings.',
+  when: 'During any shared meal',
+  where: 'Every restaurant and home',
+  lat: 9.0000,
+  lng: 38.0000,
+  icon: Icons.restaurant_rounded,
+  color: EthioColors.primary,
+  imagePaths: ['assets/images/gursha.jpg', 'assets/images/gursha1.jpg'],
+  entryFee: 'Free',
+  duration: 'Throughout meal',
+),
 ];
 
 // --- HOTELS ---
@@ -419,6 +472,129 @@ final List<Hotel> sampleHotels = [
     highlights: ['Wildlife Viewing', 'Forest Walks', 'Exclusive Access'],
     imagePaths: ['assets/images/Bale Mountains Lodge.jpg', 'assets/images/Bale Mountains Lodge1.jpg', 'assets/images/Bale Mountains Lodge2.jpg', 'assets/images/Bale Mountains Lodge3.jpg', 'assets/images/Bale Mountains Lodge4.jpg'],
   ),
+  // Add these to sampleHotels
+
+const Hotel(
+  id: 'h9',
+  name: 'Maribela Hotel',
+  destinationId: 'lalibela',
+  rating: 4.4,
+  pricePerNight: 'ETB 2,800',
+  imageUrl: 'assets/images/maribela.jpg',
+  description: 'Perched on a hill with spectacular views of the Lalibela churches, this family-run hotel offers comfortable rooms, excellent traditional food, and warm hospitality.',
+  highlights: ['Church Views', 'Traditional Coffee Ceremony', 'Family Run', 'Sunset Terrace'],
+  imagePaths: ['assets/images/maribela0.jpg', 'assets/images/maribela1.jpg', 'assets/images/maribela2.jpg', 'assets/images/maribela3.jpg'],
+),
+
+
+const Hotel(
+  id: 'h11',
+  name: 'Unison Hotel',
+  destinationId: 'bahir_dar',
+  rating: 4.2,
+  pricePerNight: 'ETB 2,500',
+  imageUrl: 'assets/images/unisonhotel.jpg',
+  description: 'Well-maintained mid-range hotel in central Bahir Dar. The rooftop restaurant offers beautiful Lake Tana sunset views. Excellent breakfast included.',
+  highlights: ['Lake View', 'Rooftop Restaurant', 'Central Location', 'Breakfast Included'],
+  imagePaths: ['assets/images/unisonhotel0.jpg', 'assets/images/unisonhotel1.jpg'],
+),
+
+const Hotel(
+  id: 'h12',
+  name: 'Gheralta Lodge',
+  destinationId: 'gheralta',
+  rating: 4.9,
+  pricePerNight: 'ETB 6,500',
+  imageUrl: 'assets/images/gheraltalodge.jpg',
+  description: 'Exclusive lodge carved into the base of a Gheralta cliff, offering extraordinary sunset views from every room. Owners are active in community development.',
+  highlights: ['Cliff Views', 'Outstanding Cuisine', 'Pool', 'Community Tourism'],
+  imagePaths: ['assets/images/gheraltalodge1.jpg', 'assets/images/gheraltalodge2.jpg', 'assets/images/gheraltalodge3.jpg'],
+),
+
+const Hotel(
+  id: 'h13',
+  name: 'Ethiopian Skylight Hotel',
+  destinationId: 'addis_ababa',
+  rating: 4.7,
+  pricePerNight: 'ETB 8,500',
+  imageUrl: 'assets/images/skylight.png',
+  description: 'Ethiopian Airlines\' flagship hotel directly connected to Addis Ababa Bole International Airport. Perfect for layovers with 24-hour check-in/out.',
+  highlights: ['Airport Direct Access', 'Multiple Restaurants', 'Huge Pool', 'Conference Facilities'],
+  imagePaths: ['assets/images/skylight.jpg', 'assets/images/skylight1.jpg', 'assets/images/skylight2.jpg'],
+),
+
+
+const Hotel(
+  id: 'h15',
+  name: 'Tukul Village',
+  destinationId: 'awash_park',
+  rating: 4.1,
+  pricePerNight: 'ETB 1,800',
+  imageUrl: 'assets/images/tukulvillage.jpg',
+  description: 'Unique traditional roundhouses (tukuls) converted into comfortable guest rooms inside the national park boundary. Fireside dining and wildlife at your doorstep.',
+  highlights: ['Inside Park', 'Traditional Tukuls', 'Campfire', 'Wildlife Viewing'],
+  imagePaths: ['assets/images/tukulvillage0.jpg', 'assets/images/tukulvillage1.jpg', 'assets/images/tukulvillage2.jpg', 'assets/images/tukulvillage3.jpg'],
+),
+
+const Hotel(
+  id: 'h16',
+  name: 'Kaleb Hotel',
+  destinationId: 'axiaum',
+  rating: 4.0,
+  pricePerNight: 'ETB 2,200',
+  imageUrl: 'assets/images/kaleb.jpg',
+  description: 'Simple but clean hotel named after the famous Axumite king. Good restaurant serving local Tigrayan cuisine. Excellent value for money.',
+  highlights: ['Central Location', 'Local Cuisine', 'Budget Price', 'Helpful Staff'],
+  imagePaths: ['assets/images/kaleb1.jpg', 'assets/images/kaleb2.jpg'],
+),
+
+const Hotel(
+  id: 'h17',
+  name: 'Jinka Resort',
+  destinationId: 'omo_valley',
+  rating: 3.9,
+  pricePerNight: 'ETB 2,800',
+  imageUrl: 'assets/images/jinkaresort.jpg',
+  description: 'Oasis in the south overlooking the hills. Air conditioning, good food, and reliable security. The best base for exploring the Omo Valley tribes.',
+  highlights: ['A/C Standard', 'Restaurant', 'Parking', 'Tour Arrangements'],
+  imagePaths: ['assets/images/jinkaresort0.jpg', 'assets/images/jinkaresort1.jpg'],
+),
+
+const Hotel(
+  id: 'h18',
+  name: 'Ras Hotel',
+  destinationId: 'addis_ababa',
+  rating: 4.1,
+  pricePerNight: 'ETB 3,500',
+  imageUrl: 'assets/images/rashotel.jpg',
+  description: 'Historic hotel in central Addis with old-world Ethiopian charm. Built in the 1960s, recently renovated, steps from the National Museum and University.',
+  highlights: ['Historic Building', 'Central Location', 'Garden Restaurant', 'Cultural District'],
+  imagePaths: ['assets/images/rashotel0.jpg', 'assets/images/rashotel1.jpg', 'assets/images/rashotel2.jpg'],
+),
+
+const Hotel(
+  id: 'h19',
+  name: 'BN Kuriftu Resort & Spa',
+  destinationId: 'bishoftu',
+  rating: 4.7,
+  pricePerNight: 'ETB 4,000',
+  imageUrl: 'assets/images/kuriftu_bishoftu.png',
+  description: 'Gorgeous lakeside resort on Lake Bishoftu (also known as Debre Ziet), 45 minutes from Addis. Traditional Ethiopian architecture, spa, and water sports.',
+  highlights: ['Lakeside Location', 'Full Service Spa', 'Water Sports', 'Multiple Restaurants'],
+  imagePaths: ['assets/images/kuriftu_bishoftu0.jpg', 'assets/images/kuriftu_bishoftu1.jpg', 'assets/images/kuriftu_bishoftu2.jpg'],
+),
+
+const Hotel(
+  id: 'h20',
+  name: 'Arbaminch Resort',
+  destinationId: 'arbaminch',
+  rating: 4.3,
+  pricePerNight: 'ETB 3,200',
+  imageUrl: 'assets/images/arbaminch_resort.jpg',
+  description: 'Scenic resort overlooking Lake Abaya and Lake Chamo. The best base for seeing the "Crocodile Market" on Lake Chamo and the Nechisar National Park.',
+  highlights: ['Lake Views', 'Pool', 'Village Walks', 'Bird Watching'],
+  imagePaths: ['assets/images/arbaminch_resort0.jpg', 'assets/images/arbaminch_resort1.jpg'],
+),
 ];
 
 // --- CAR RENTALS ---
@@ -432,7 +608,7 @@ final List<CarRental> sampleCarRentals = [
     rating: 4.7,
     description: 'Premium 4x4 rentals perfect for navigating both city streets and rugged Ethiopian terrain. All vehicles are well-maintained and come with optional chauffeur services.',
     highlights: ['Unlimited Mileage', 'Insurance Included', 'Optional Driver', 'GPS Available'],
-    imagePaths: ['assets/images/addisababa.jpg'],
+    imagePaths: ['assets/images/Addis Wheels.jpg'],
   ),
   const CarRental(
     id: 'c2',
@@ -454,8 +630,105 @@ final List<CarRental> sampleCarRentals = [
     rating: 4.9,
     description: 'Specialized heavy-duty vehicles designed specifically for extreme expeditions like the Danakil Depression. Fully equipped with camping gear and spare tires.',
     highlights: ['Heavy Duty', 'Camping Gear', 'Radio Comm', 'Expert Mechanics'],
-    imagePaths: ['assets/images/Off-Road Ethio.jpg'],
+    imagePaths: ['assets/images/Off-Road Ethio1.jpg', 'assets/images/Off-Road Ethio2.jpg', 'assets/images/Off-Road Ethio3.jpg', 'assets/images/Off-Road Ethio4.jpg'],
   ),
+  // Add these to sampleCarRentals
+
+const CarRental(
+  id: 'c4',
+  name: 'Ethio Rent',
+  carType: 'Sedan',
+  pricePerDay: 'ETB 1,500',
+  imageUrl: 'assets/images/ethiorent.png',
+  rating: 4.3,
+  description: 'Dependable sedan rentals perfect for Addis Ababa city exploring and day trips to nearby sites like Debre Libanos or Tiya. Well-maintained fleet with roadside assistance.',
+  highlights: ['City Parking Included', '24/7 Support', 'Child Seats Available', 'Free Delivery Within Addis'],
+  imagePaths: ['assets/images/ethiorent.jpg', 'assets/images/ethiorent1.jpg'],
+),
+
+const CarRental(
+  id: 'c5',
+  name: 'Volcano 4x4',
+  carType: 'Toyota Land Cruiser Prado',
+  pricePerDay: 'ETB 5,500',
+  imageUrl: 'assets/images/volcano4x4.jpg',
+  rating: 4.8,
+  description: 'Danakil specialists with expedition-ready Land Cruisers including snorkels for river crossings, roof tents, and extra fuel capacity. Drivers trained in extreme conditions.',
+  highlights: ['Expedition Ready', 'Roof Tent', 'Extra Fuel Tanks', 'Experienced Drivers'],
+  imagePaths: ['assets/images/volcano4x41.jpg', 'assets/images/volcano4x42.jpg'],
+),
+
+const CarRental(
+  id: 'c6',
+  name: 'Premier Trans',
+  carType: 'Mercedes Sprinter',
+  pricePerDay: 'ETB 9,000',
+  imageUrl: 'assets/images/premiertrans.jpg',
+  rating: 4.6,
+  description: 'Luxury minibus rentals for groups of 6-15 people. Air conditioning, comfortable seating, and professional English-speaking drivers. Ideal for family or group tours.',
+  highlights: ['Group Transportation', 'TV Screens', 'Refreshments', 'Tour Guide Available'],
+  imagePaths: ['assets/images/premiertrans1.jpg'],
+),
+
+const CarRental(
+  id: 'c7',
+  name: 'Oromo Rent Car',
+  carType: 'Compact',
+  pricePerDay: 'ETB 950',
+  imageUrl: 'assets/images/oromorent.jpg',
+  rating: 4.1,
+  description: 'Budget car rental service with newer model Hyundais and Toyotas. Perfect for economical city travel. Short-term and long-term rental discounts available.',
+  highlights: ['Lowest Prices', 'Free GPS', 'Weekly Discounts', 'Airport Pickup'],
+  imagePaths: ['assets/images/oromorent1.jpg'],
+),
+
+const CarRental(
+  id: 'c8',
+  name: 'Abyssinia Self Drive',
+  carType: 'SUV',
+  pricePerDay: 'ETB 3,200',
+  imageUrl: 'assets/images/abyssinia.jpg',
+  rating: 4.4,
+  description: 'Self-drive rentals for independent travelers who understand Ethiopian road conditions. All vehicles come with spare tires, tool kits, and road maps.',
+  highlights: ['Self Drive Freedom', 'Full Insurance', 'Roadside Assistance', 'One-way Rentals'],
+  imagePaths: ['assets/images/abyssinia0.jpg', 'assets/images/abyssinia1.jpg'],
+),
+
+const CarRental(
+  id: 'c9',
+  name: 'Nomad Overland',
+  carType: 'Overland Truck',
+  pricePerDay: 'ETB 12,000',
+  imageUrl: 'assets/images/nomad.png',
+  rating: 4.9,
+  description: 'Complete overland expedition vehicles for 6-month-plus journeys across Africa. Fully equipped with kitchen, sleeping for 4, solar power, and water filtration.',
+  highlights: ['Fully Self-contained', 'Solar Powered', 'Long-term Only', 'Maintenance Included'],
+  imagePaths: ['assets/images/nomad.jpg', 'assets/images/nomad1.jpg'],
+),
+
+const CarRental(
+  id: 'c10',
+  name: 'Bahir Dar Car Hire',
+  carType: 'Minivan',
+  pricePerDay: 'ETB 2,800',
+  imageUrl: 'assets/images/bahirhire.jpg',
+  rating: 4.3,
+  description: 'Local rental service based in Bahir Dar specializing in minivans suitable for 5-7 passengers. Great for Lake Tana monastery day trips and Blue Nile Falls.',
+  highlights: ['Region Specific', 'Multi-day Discounts', 'Driver Guide Available', 'Clean Fleet'],
+  imagePaths: ['assets/images/bahirhire1.jpg'],
+),
+
+const CarRental(
+  id: 'c11',
+  name: 'Genesis Luxury Rentals',
+  carType: 'Luxury Sedan',
+  pricePerDay: 'ETB 6,500',
+  imageUrl: 'assets/images/genesis.png',
+  rating: 4.7,
+  description: 'Premium luxury car rentals including BMW, Mercedes, and Lexus. Professional chauffeurs available. VIP airport meet-and-greet service included.',
+  highlights: ['Luxury Fleet', 'Professional Chauffeur', 'VIP Service', 'Mobile Concierge'],
+  imagePaths: ['assets/images/genesis1.jpg', 'assets/images/genesis2.jpg'],
+),
 ];
 
 // --- TOUR AGENCIES ---
@@ -493,6 +766,103 @@ final List<TourAgency> sampleTourAgencies = [
     highlights: ['Certified Scholars', 'Skip-the-line', 'Multi-language', 'Photography Tips'],
     imagePaths: ['assets/images/Lalibela Guides.jpg'],
   ),
+  // Add these to sampleTourAgencies
+
+const TourAgency(
+  id: 't4',
+  name: 'Ethio Travel & Tours',
+  specialty: 'Full Country Packages',
+  contact: '+251 911 456 789',
+  imageUrl: 'assets/images/ethiotravel.jpg',
+  rating: 4.5,
+  description: 'One of Ethiopia\'s largest tour operators offering comprehensive historical circuit tours (Axum-Lalibela-Gondar-Bahir Dar) plus options for Omo Valley and Danakil. Excellent logistics.',
+  highlights: ['24/7 Support', 'Multiple Languages', 'Emergency Medical', 'Local Offices Nationwide'],
+  imagePaths: ['assets/images/ethiotravel1.jpg'],
+),
+
+const TourAgency(
+  id: 't5',
+  name: 'Tesfa Tours',
+  specialty: 'Community Trekking',
+  contact: '+251 922 345 678',
+  imageUrl: 'assets/images/tesfa.jpg',
+  rating: 4.9,
+  description: 'Pioneers of community-based tourism in Ethiopia. Their "Tesfa" means "hope" in Amharic. Treks in Lalibela, Tigray, and the Blue Nile Gorge stay in community-run lodges.',
+  highlights: ['Community Led', 'All Local Guides', 'Cultural Immersion', '100% Fair Wage'],
+  imagePaths: ['assets/images/tesfa.jpg', 'assets/images/tesfa1.jpg'],
+),
+
+const TourAgency(
+  id: 't6',
+  name: 'Green Land Tours',
+  specialty: 'Bird Watching',
+  contact: '+251 933 123 456',
+  imageUrl: 'assets/images/greenland.jpg',
+  rating: 4.6,
+  description: 'Specialists in Ethiopia\'s spectacular birding (over 860 species, 29+ endemic). Custom itineraries to Bale, Awash, Lake Ziway, and the Sululta Plains.',
+  highlights: ['Expert Ornithologists', 'High-end Optics', 'Photo Blinds', 'Bird Checklists'],
+  imagePaths: ['assets/images/greenland1.jpg'],
+),
+
+const TourAgency(
+  id: 't7',
+  name: 'Adventure Ethiopia',
+  specialty: 'Extreme Sports',
+  contact: '+251 944 567 890',
+  imageUrl: 'assets/images/adventureethio.jpg',
+  rating: 4.4,
+  description: 'Mountain biking, rock climbing at Mount Gheralta, whitewater rafting on the Omo and Blue Nile, and paragliding over the Ethiopian highlands.',
+  highlights: ['Equipment Provided', 'Certified Instructors', 'Safety Focus', 'Action Photography'],
+  imagePaths: ['assets/images/adventureethio1.jpg', 'assets/images/adventureethio2.jpg'],
+),
+
+const TourAgency(
+  id: 't8',
+  name: 'Abuna Tours',
+  specialty: 'Religious Pilgrimage',
+  contact: '+251 911 234 567',
+  imageUrl: 'assets/images/abunatours.png',
+  rating: 4.8,
+  description: 'Specialized in religious tours to monasteries, rock-hewn churches, and pilgrimage sites. Expert guides in Orthodox Christian theology and church history.',
+  highlights: ['Priest Guides', 'Church Access', 'Liturgical Knowledge', 'Calendar Coordination'],
+  imagePaths: ['assets/images/abunatours.jpg'],
+),
+
+const TourAgency(
+  id: 't9',
+  name: 'Ethio Photo Safari',
+  specialty: 'Photography Tours',
+  contact: '+251 922 111 222',
+  imageUrl: 'assets/images/photosafari1.png',
+  rating: 4.9,
+  description: 'Tours designed specifically for photographers with optimal timing for light, crowds, and cultural events. Professional photography instructor guides.',
+  highlights: ['Small Groups', 'Professional Photographer', 'Post-processing Workshop', 'Prime Locations'],
+  imagePaths: ['assets/images/photosafari.jpg'],
+),
+
+const TourAgency(
+  id: 't10',
+  name: 'Meskerem Tours',
+  specialty: 'Luxury Escorted',
+  contact: '+251 933 444 555',
+  imageUrl: 'assets/images/meskerem.jpg',
+  rating: 4.7,
+  description: 'High-end escorted tours with 4-5 star accommodations, private vehicle and guide, and premium experiences (private coffee ceremonies, helicopter transfers).',
+  highlights: ['Private Guide', 'Luxury Hotels', 'Helicopter Options', 'Gourmet Meals'],
+  imagePaths: ['assets/images/meskerem1.jpg'],
+),
+
+const TourAgency(
+  id: 't11',
+  name: 'Omo Valley Explorer',
+  specialty: 'Tribal Tours',
+  contact: '+251 933 777 888',
+  imageUrl: 'assets/images/omoexplorer.jpg',
+  rating: 4.6,
+  description: 'Ethnographic specialists focusing exclusively on the Omo Valley tribes: Hamer, Mursi, Karo, Dassanech, and the weekly market at Turmi. Deep relationships with villages.',
+  highlights: ['Anthropologist Guides', 'Respectful Ethics', 'Multi-language', 'Cultural Protocol Training'],
+  imagePaths: ['assets/images/omoexplorer1.jpg', 'assets/images/omoexplorer2.jpg'],
+),
 ];
 
 // --- PLANNER ---
@@ -535,4 +905,91 @@ final List<NearbyPlace> nearbyPlaces = [
     icon: Icons.coffee_outlined,
     color: EthioColors.tertiary,
   ),
+  // Add these to your nearbyPlaces list
+
+const NearbyPlace(
+  name: 'Bank & ATM',
+  distance: '200 m away',
+  icon: Icons.account_balance_outlined,
+  color: EthioColors.primary,
+),
+
+const NearbyPlace(
+  name: 'Pharmacy',
+  distance: '500 m away',
+  icon: Icons.local_pharmacy_outlined,
+  color: EthioColors.tertiary,
+),
+
+const NearbyPlace(
+  name: 'Police Station',
+  distance: '1 km away',
+  icon: Icons.local_police_outlined,
+  color: EthioColors.primary,
+),
+
+const NearbyPlace(
+  name: 'Gas Station',
+  distance: '800 m away',
+  icon: Icons.local_gas_station_outlined,
+  color: EthioColors.secondary,
+),
+
+const NearbyPlace(
+  name: 'Hospital',
+  distance: '2 km away',
+  icon: Icons.local_hospital_outlined,
+  color: EthioColors.tertiary,
+),
+
+const NearbyPlace(
+  name: 'Tourist Info',
+  distance: '350 m away',
+  icon: Icons.info_outline_rounded,
+  color: EthioColors.primary,
+),
+
+const NearbyPlace(
+  name: 'Money Exchange',
+  distance: '600 m away',
+  icon: Icons.currency_exchange_rounded,
+  color: EthioColors.secondary,
+),
+
+const NearbyPlace(
+  name: 'Supermarket',
+  distance: '400 m away',
+  icon: Icons.store_outlined,
+  color: EthioColors.ink,
+),
+
+const NearbyPlace(
+  name: 'Bus Station',
+  distance: '1.5 km away',
+  icon: Icons.directions_bus_outlined,
+  color: EthioColors.primary,
+),
+
+const NearbyPlace(
+  name: 'Cafe',
+  distance: '250 m away',
+  icon: Icons.coffee_outlined,
+  color: EthioColors.tertiary,
+),
+
+const NearbyPlace(
+  name: 'WiFi Cafe',
+  distance: '300 m away',
+  icon: Icons.wifi_outlined,
+  color: EthioColors.secondary,
+),
+
+const NearbyPlace(
+  name: 'ATM (24 hr)',
+  distance: '450 m away',
+  icon: Icons.credit_card_outlined,
+  color: EthioColors.primary,
+),
 ];
+// Add this new section to your sample data
+

@@ -7,6 +7,8 @@ import '../screens/insight_detail_screen.dart';
 import '../state/app_localization.dart';
 import '../state/app_scope.dart';
 import '../widgets/ui_components.dart';
+import 'smart_travel_features_screen.dart';
+import 'travel_toolkit_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -46,6 +48,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(
       padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
       children: [
+        _HomeHero(
+          favoriteCount: state.favorites.length,
+          tripStops: state.tripDestinations.length,
+          isDark: state.themeMode == ThemeMode.dark,
+          onToggleTheme: state.toggleThemeMode,
+          onOpenToolkit: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const TravelToolkitScreen()),
+          ),
+          onOpenSmartFeatures: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const SmartTravelFeaturesScreen()),
+          ),
+        ),
+        const SizedBox(height: 20),
         // 1. Search Bar
         TextField(
           controller: _controller,
@@ -166,6 +181,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Culture': return Icons.festival_outlined;
       case 'Historical': return Icons.account_balance_outlined;
       case 'Cities': return Icons.location_city_outlined;
+      case 'Adventure': return Icons.terrain_rounded;
+      case 'Spiritual': return Icons.self_improvement_rounded;
+      case 'Wildlife': return Icons.pets_rounded;
       default: return Icons.travel_explore_outlined;
     }
   }
@@ -176,6 +194,9 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Culture': return EthioColors.primary;
       case 'Historical': return EthioColors.tertiary;
       case 'Cities': return EthioColors.ink;
+      case 'Adventure': return EthioColors.primary;
+      case 'Spiritual': return EthioColors.tertiary;
+      case 'Wildlife': return EthioColors.secondary;
       default: return EthioColors.primary;
     }
   }
@@ -273,6 +294,103 @@ class _InsightCard extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _HomeHero extends StatelessWidget {
+  const _HomeHero({
+    required this.favoriteCount,
+    required this.tripStops,
+    required this.isDark,
+    required this.onToggleTheme,
+    required this.onOpenToolkit,
+    required this.onOpenSmartFeatures,
+  });
+
+  final int favoriteCount;
+  final int tripStops;
+  final bool isDark;
+  final VoidCallback onToggleTheme;
+  final VoidCallback onOpenToolkit;
+  final VoidCallback onOpenSmartFeatures;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(26),
+        gradient: LinearGradient(
+          colors: [
+            scheme.primary.withValues(alpha: 0.92),
+            scheme.secondary.withValues(alpha: 0.88),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Plan Ethiopia Your Way',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              FilledButton.tonalIcon(
+                onPressed: onToggleTheme,
+                icon: Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
+                label: Text(isDark ? 'Dark' : 'Light'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Colors.white.withValues(alpha: 0.18),
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '$favoriteCount saved places • $tripStops planned stops',
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onOpenToolkit,
+                  icon: const Icon(Icons.travel_explore_rounded),
+                  label: const Text('Travel Toolkit'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white70),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: onOpenSmartFeatures,
+                  icon: const Icon(Icons.auto_awesome_rounded),
+                  label: const Text('Smart Features'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white70),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
