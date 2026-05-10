@@ -17,6 +17,7 @@ class AppState extends ChangeNotifier {
   static const _themeModeKey = 'theme_mode';
   static const _categoryKey = 'category';
   static const _queryKey = 'query';
+  static const _savedAiPlansKey = 'saved_ai_plans_v1';
 
   final LocalStore _store;
 
@@ -26,6 +27,7 @@ class AppState extends ChangeNotifier {
   Set<String> _favoriteIds = <String>{};
   LanguageOption _language = LanguageOption.english;
   ThemeMode _themeMode = ThemeMode.light;
+  List<SavedAiTripPlan> _savedAiPlans = <SavedAiTripPlan>[];
 
   // Full trip plan
   TripPlan _tripPlan = TripPlan.defaultPlan();
@@ -39,6 +41,7 @@ class AppState extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   TripPlan get tripPlan => _tripPlan;
   String get activeTripName => _tripPlan.name;
+  List<SavedAiTripPlan> get savedAiPlans => List.unmodifiable(_savedAiPlans);
 
   List<Destination> get destinations => sampleDestinations;
   Set<String> get favoriteIds => _favoriteIds;
@@ -137,6 +140,15 @@ class AppState extends ChangeNotifier {
       } catch (_) {
         _tripPlan = TripPlan.defaultPlan();
       }
+    }
+    final aiPlansJson = _store.readString(_savedAiPlansKey, fallback: '[]');
+    try {
+      final decoded = jsonDecode(aiPlansJson) as List<dynamic>;
+      _savedAiPlans = decoded
+          .map((item) => SavedAiTripPlan.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      _savedAiPlans = <SavedAiTripPlan>[];
     }
     _ready = true;
     notifyListeners();
@@ -285,6 +297,64 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  void saveAiTripPlan({
+    required String title,
+    required List<AiPlanSection> sections,
+  }) {
+    final tasks = <SavedPlanTask>[];
+    for (final section in sections) {
+      final lines = section.body.split('\n');
+      for (final raw in lines) {
+        final line = raw.trim();
+        if (line.isEmpty) continue;
+        if (line.length < 6) continue;
+        if (!(line.startsWith('-') || line.startsWith('*') || RegExp(r'^\d+[\).\s]').hasMatch(line))) {
+          continue;
+        }
+        final normalized = line.replaceFirst(RegExp(r'^[-*\d\).\s]+'), '').trim();
+        if (normalized.isEmpty) continue;
+        tasks.add(SavedPlanTask(
+          id: '${DateTime.now().microsecondsSinceEpoch}_${tasks.length}',
+          label: normalized,
+        ));
+      }
+    }
+
+    final plan = SavedAiTripPlan(
+      id: DateTime.now().microsecondsSinceEpoch.toString(),
+      title: title.trim().isEmpty ? 'AI Trip Plan' : title.trim(),
+      createdAt: DateTime.now(),
+      sections: sections,
+      tasks: tasks,
+    );
+    _savedAiPlans.insert(0, plan);
+    _persistSavedAiPlans();
+    notifyListeners();
+  }
+
+  void toggleSavedPlanTask({
+    required String planId,
+    required String taskId,
+  }) {
+    for (final plan in _savedAiPlans) {
+      if (plan.id != planId) continue;
+      for (final task in plan.tasks) {
+        if (task.id == taskId) {
+          task.completed = !task.completed;
+          _persistSavedAiPlans();
+          notifyListeners();
+          return;
+        }
+      }
+    }
+  }
+
+  void deleteSavedPlan(String planId) {
+    _savedAiPlans.removeWhere((plan) => plan.id == planId);
+    _persistSavedAiPlans();
+    notifyListeners();
+  }
+
   // ── Language ───────────────────────────────────────────
 
   void setLanguage(LanguageOption option) {
@@ -317,6 +387,7 @@ class AppState extends ChangeNotifier {
     await _store.remove(_categoryKey);
     await _store.remove(_languageKey);
     await _store.remove(_themeModeKey);
+    await _store.remove(_savedAiPlansKey);
     notifyListeners();
   }
 
@@ -330,6 +401,10 @@ class AppState extends ChangeNotifier {
 
   Future<void> _persistString(String key, String value) =>
       _store.writeString(key, value);
+
+  Future<void> _persistSavedAiPlans() => _store.writeString(
+      _savedAiPlansKey,
+      jsonEncode(_savedAiPlans.map((plan) => plan.toJson()).toList()));
 }
 
 Future<AppState> loadAppState() async {

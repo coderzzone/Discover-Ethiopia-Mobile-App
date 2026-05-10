@@ -6,7 +6,7 @@ import '../models/app_models.dart';
 import '../state/app_localization.dart';
 import '../state/app_scope.dart';
 import '../widgets/ui_components.dart';
-import 'travel_toolkit_screen.dart';
+
 
 class TripPlannerScreen extends StatefulWidget {
   const TripPlannerScreen({super.key});
@@ -34,7 +34,7 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
     final completion = _packingDone.length / _packingItems.length;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 40),
+      padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 84, 20, 40),
       children: [
         Container(
           padding: const EdgeInsets.all(20),
@@ -290,20 +290,7 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                 ),
             ],
           ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const TravelToolkitScreen()));
-                  },
-                  icon: const Icon(Icons.health_and_safety_rounded, size: 18),
-                  label: const Text('Travel Toolkit'),
-                ),
-              ),
-            ],
-          ),
+
         ],
       ),
     );

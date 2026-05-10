@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../app.dart';
-import '../widgets/ui_components.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,115 +11,147 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _animController;
+  late final Animation<double> _fadeAnim;
+  late final Animation<double> _scaleAnim;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
+    _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOut),
+    );
+    _scaleAnim = Tween<double>(begin: 0.95, end: 1).animate(
+      CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+    );
+
+    _animController.forward();
+
+    Timer(const Duration(milliseconds: 2500), () {
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed(EthioExploreShell.routeName);
     });
   }
 
   @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    
     return Scaffold(
+      backgroundColor: scheme.surface,
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFFA75D30), Color(0xFFB86D35), Color(0xFFD39653)],
+          // Subtle background glow
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: RadialGradient(
+                  center: Alignment.center,
+                  radius: 1.2,
+                  colors: [
+                    scheme.primaryContainer.withValues(alpha: 0.3),
+                    scheme.surface,
+                  ],
+                ),
               ),
             ),
           ),
-          Positioned(
-            top: -120,
-            left: -100,
-            child: _GlowBlob(color: Colors.white.withValues(alpha: 0.10), size: 260),
-          ),
-          Positioned(
-            bottom: -100,
-            right: -90,
-            child: _GlowBlob(color: Colors.white.withValues(alpha: 0.08), size: 220),
-          ),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+            child: AnimatedBuilder(
+              animation: _animController,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _fadeAnim.value,
+                  child: Transform.scale(
+                    scale: _scaleAnim.value,
+                    child: child,
+                  ),
+                );
+              },
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    width: 132,
-                    height: 132,
+                    width: 130,
+                    height: 130,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.white.withValues(alpha: 0.16),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+                      color: scheme.surfaceContainerLowest,
+                      boxShadow: [
+                        BoxShadow(
+                          color: scheme.primary.withValues(alpha: 0.15),
+                          blurRadius: 40,
+                          offset: const Offset(0, 15),
+                        ),
+                      ],
                     ),
                     child: ClipOval(
                       child: Padding(
-                        padding: const EdgeInsets.all(14),
+                        padding: const EdgeInsets.all(20),
                         child: Image.asset('Logo.png', fit: BoxFit.contain),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 28),
-                  const Text(
+                  const SizedBox(height: 36),
+                  Text(
                     'Discover Ethiopia',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 44,
+                      color: scheme.primary,
+                      fontSize: 34,
                       fontWeight: FontWeight.w800,
-                      letterSpacing: -1,
+                      letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 8),
                   Text(
-                    'Explore Ethiopia Offline',
+                    'EXPLORE OFFLINE',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.82),
-                      fontSize: 20,
-                      height: 1.35,
-                    ),
-                  ),
-                  const SizedBox(height: 72),
-                  Text(
-                    'Mega Software Solutions',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      fontSize: 13,
+                      color: scheme.onSurface.withValues(alpha: 0.5),
+                      fontSize: 14,
+                      letterSpacing: 3.0,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  const OfflineChip(label: 'Authentic experiences', color: Colors.white),
                 ],
               ),
             ),
           ),
-          const Positioned(
+          Positioned(
             left: 0,
             right: 0,
-            bottom: 42,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Entering Journey',
-                  style: TextStyle(
-                    color: Colors.white,
-                    letterSpacing: 2,
-                    fontWeight: FontWeight.w700,
-                  ),
+            bottom: 40,
+            child: AnimatedBuilder(
+              animation: _animController,
+              builder: (context, child) {
+                return Opacity(
+                  opacity: _fadeAnim.value,
+                  child: child,
+                );
+              },
+              child: Text(
+                'MEGA SOFTWARE SOLUTIONS',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: scheme.onSurface.withValues(alpha: 0.3),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 2.0,
                 ),
-              ],
+              ),
             ),
           ),
         ],
@@ -129,18 +160,3 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-class _GlowBlob extends StatelessWidget {
-  const _GlowBlob({required this.color, required this.size});
-
-  final Color color;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: color),
-    );
-  }
-}

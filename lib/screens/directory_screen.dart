@@ -10,20 +10,11 @@ class DirectoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Scaffold(
-      backgroundColor: scheme.surface,
-      appBar: AppBar(
-        title: const Text('Directory & Services', style: TextStyle(fontWeight: FontWeight.w800)),
-        centerTitle: false,
-        backgroundColor: scheme.surface,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 40),
-        children: [
-          const SizedBox(height: 10),
+    return ListView(
+      padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 84, 20, 40),
+      children: [
+        Text('Directory & Services', style: Theme.of(context).textTheme.headlineMedium),
+        const SizedBox(height: 14),
           _buildSection(
             context,
             title: 'Top Rated Hotels',
@@ -54,8 +45,7 @@ class DirectoryScreen extends StatelessWidget {
             itemBuilder: (item) => _TourAgencyCard(agency: item as TourAgency),
           ),
         ],
-      ),
-    );
+      );
   }
 
   Widget _buildSection(

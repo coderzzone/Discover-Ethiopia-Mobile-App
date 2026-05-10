@@ -25,7 +25,7 @@ class GeminiTripPlannerService {
     required String customQuestions,
   }) async {
     if (!configured) {
-      return 'Missing Gemini API key. Start app with --dart-define=GEMINI_API_KEY=YOUR_KEY';
+      throw Exception('Missing Gemini API key. Start app with --dart-define=GEMINI_API_KEY=YOUR_KEY');
     }
 
     final modelName = await _resolveModelName();
@@ -34,31 +34,31 @@ class GeminiTripPlannerService {
     );
 
     final prompt = '''
-You are an expert Ethiopia travel planner.
-Create a detailed itinerary.
+You are an expert, highly enthusiastic Ethiopia travel planner and local guide. Your goal is to craft an incredibly personalized, rich, and detailed itinerary that strictly follows the user's specific inputs and custom questions. Do not give generic advice—tailor everything!
 
-Trip inputs:
+TRIP PROFILE:
 - Duration: $durationDays days
-- Budget: ETB $budgetEtb
-- Interests: $interests
-- Style: $travelerStyle
-- Season: $season
-- Custom traveler questions: ${customQuestions.isEmpty ? 'None provided' : customQuestions}
+- Budget Limit: $budgetEtb ETB (strictly adhere to this budget)
+- Core Interests: $interests
+- Travel Style: $travelerStyle
+- Season of Travel: $season
+- CUSTOM REQUESTS / QUESTIONS: ${customQuestions.isEmpty ? 'None provided' : customQuestions}
 
-Rules:
-1) Consider road conditions, realistic travel time, and altitude acclimatization.
-2) Include seasonal guidance:
-   - Avoid Danakil from June to September.
-   - Omo Valley is most accessible June to September.
-3) Output sections exactly:
-   - Route Summary
-   - Day-by-Day Plan
-   - Budget Breakdown
-   - Packing Priorities
-   - Risk & Safety Notes
-   - Why This Plan Fits
-5) Under each section, answer the user's custom questions where relevant.
-4) Keep it practical and specific to Ethiopia.
+CRITICAL RULES:
+1. CUSTOM REQUESTS FIRST: You MUST explicitly address the user's "CUSTOM REQUESTS" throughout the plan. If they travel with kids, mention kid-friendly spots. If they want coffee, add coffee stops.
+2. REALITY CHECK: Factor in Ethiopia's actual road conditions, realistic driving times between cities, and altitude acclimatization (e.g., Addis Ababa is at 2355m).
+3. SEASONAL ACCURACY: 
+   - Danakil Depression is dangerously hot and mostly closed from June to September.
+   - Omo Valley roads can be impassable in the rainy season (July-August) but great otherwise.
+4. EXACT OUTPUT FORMAT: You must organize your response using EXACTLY these headings (do not use markdown headers (#)(*)(**), just the exact text followed by a newline):
+Route Summary
+Day-by-Day Plan
+Budget Breakdown
+Packing Priorities
+Risk & Safety Notes
+Why This Plan Fits
+
+Make the tone exciting, practical, and highly specific to Ethiopia. Let's build the perfect trip!
 ''';
 
     final body = jsonEncode({
@@ -70,8 +70,8 @@ Rules:
         },
       ],
       'generationConfig': {
-        'temperature': 0.35,
-        'maxOutputTokens': 1200,
+        'temperature': 0.85,
+        'maxOutputTokens': 8001,
       },
     });
 
@@ -82,23 +82,26 @@ Rules:
     );
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      return 'Planner request failed (${response.statusCode}): ${response.body}';
+      throw Exception('Planner request failed (${response.statusCode}): ${response.body}');
     }
 
     final json = jsonDecode(response.body) as Map<String, dynamic>;
     final candidates = (json['candidates'] as List?) ?? const [];
     if (candidates.isEmpty) {
-      return 'No plan returned by model.';
+      throw Exception('No plan returned by model.');
     }
 
     final content = (candidates.first as Map<String, dynamic>)['content'] as Map<String, dynamic>?;
     final parts = (content?['parts'] as List?) ?? const [];
     if (parts.isEmpty) {
-      return 'No text content returned by model.';
+      throw Exception('No text content returned by model.');
     }
 
     final text = (parts.first as Map<String, dynamic>)['text'] as String?;
-    return text?.trim().isNotEmpty == true ? text!.trim() : 'Empty plan returned by model.';
+    if (text?.trim().isNotEmpty != true) {
+      throw Exception('Empty plan returned by model.');
+    }
+    return text!.trim();
   }
 
   Future<String> _resolveModelName() async {

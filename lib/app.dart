@@ -1,5 +1,5 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'state/app_scope.dart';
 import 'state/app_state.dart';
 import 'screens/favorites_screen.dart';
@@ -9,6 +9,7 @@ import 'screens/directory_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/trip_planner_screen.dart';
 import 'screens/ai_trip_planner_screen.dart';
+import 'screens/saved_plans_screen.dart';
 import 'theme/app_theme.dart';
 import 'models/app_models.dart';
 import 'screens/destination_details_screen.dart';
@@ -66,6 +67,7 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
     HomeScreen(),
     TripPlannerScreen(),
     AiTripPlannerScreen(),
+    SavedPlansScreen(),
     FavoritesScreen(),
     DirectoryScreen(),
   ];
@@ -74,33 +76,49 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         centerTitle: false,
         elevation: 0,
         scrolledUnderElevation: 0,
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
-        titleSpacing: 20,
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+            ),
+          ),
+        ),
+        titleSpacing: 24,
         title: Text(
           'Discover Ethiopia',
           style: TextStyle(
             color: Theme.of(context).colorScheme.primary,
-            fontSize: 24,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -0.4,
+            fontSize: 22,
+            fontWeight: FontWeight.w900,
+            letterSpacing: -0.5,
           ),
         ),
         actions: [
-          IconButton(
-            tooltip: 'Toggle dark mode',
-            onPressed: () => AppStateScope.read(context).toggleThemeMode(),
-            icon: Icon(
-              AppStateScope.watch(context).themeMode == ThemeMode.dark
-                  ? Icons.dark_mode_rounded
-                  : Icons.light_mode_rounded,
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              tooltip: 'Toggle dark mode',
+              onPressed: () => AppStateScope.read(context).toggleThemeMode(),
+              icon: Icon(
+                AppStateScope.watch(context).themeMode == ThemeMode.dark
+                    ? Icons.dark_mode_rounded
+                    : Icons.light_mode_rounded,
+                size: 20,
+              ),
             ),
           ),
-          const SizedBox(width: 8),
         ],
       ),
       body: IndexedStack(index: _selectedIndex, children: _pages),
@@ -125,6 +143,11 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
             icon: Icon(Icons.auto_awesome_outlined),
             selectedIcon: Icon(Icons.auto_awesome),
             label: 'AI Planner',
+          ),
+          const NavigationDestination(
+            icon: Icon(Icons.checklist_outlined),
+            selectedIcon: Icon(Icons.checklist_rounded),
+            label: 'Saved Plans',
           ),
           NavigationDestination(
             icon: const Icon(Icons.bookmark_outline),

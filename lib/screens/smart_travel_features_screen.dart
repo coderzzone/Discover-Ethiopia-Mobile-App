@@ -185,7 +185,7 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: EthioColors.primaryContainer.withValues(alpha: 0.3),
+              backgroundColor: const Color.fromARGB(255, 27, 27, 26).withValues(alpha: 0.3),
               child: Icon(icon, color: EthioColors.primary),
             ),
             const SizedBox(width: 12),

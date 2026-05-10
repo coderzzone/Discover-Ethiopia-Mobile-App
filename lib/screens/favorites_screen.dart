@@ -15,7 +15,7 @@ class FavoritesScreen extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+      padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 84, 20, 20),
       children: [
         Row(
           children: [

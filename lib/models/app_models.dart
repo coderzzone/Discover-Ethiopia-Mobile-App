@@ -373,3 +373,85 @@ class TripPlan {
     days: [TripDayPlan(dayIndex: 0), TripDayPlan(dayIndex: 1), TripDayPlan(dayIndex: 2)],
   );
 }
+
+class SavedPlanTask {
+  SavedPlanTask({
+    required this.id,
+    required this.label,
+    this.completed = false,
+  });
+
+  final String id;
+  final String label;
+  bool completed;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'label': label,
+    'completed': completed,
+  };
+
+  factory SavedPlanTask.fromJson(Map<String, dynamic> json) => SavedPlanTask(
+    id: (json['id'] as String?) ?? '',
+    label: (json['label'] as String?) ?? '',
+    completed: (json['completed'] as bool?) ?? false,
+  );
+}
+
+class SavedAiTripPlan {
+  SavedAiTripPlan({
+    required this.id,
+    required this.title,
+    required this.createdAt,
+    required this.sections,
+    required this.tasks,
+  });
+
+  final String id;
+  String title;
+  final DateTime createdAt;
+  final List<AiPlanSection> sections;
+  final List<SavedPlanTask> tasks;
+
+  int get completedTasks => tasks.where((task) => task.completed).length;
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'title': title,
+    'createdAt': createdAt.toIso8601String(),
+    'sections': sections.map((section) => section.toJson()).toList(),
+    'tasks': tasks.map((task) => task.toJson()).toList(),
+  };
+
+  factory SavedAiTripPlan.fromJson(Map<String, dynamic> json) => SavedAiTripPlan(
+    id: (json['id'] as String?) ?? '',
+    title: (json['title'] as String?) ?? 'Saved Plan',
+    createdAt: DateTime.tryParse((json['createdAt'] as String?) ?? '') ?? DateTime.now(),
+    sections: ((json['sections'] as List?) ?? [])
+        .map((section) => AiPlanSection.fromJson(section as Map<String, dynamic>))
+        .toList(),
+    tasks: ((json['tasks'] as List?) ?? [])
+        .map((task) => SavedPlanTask.fromJson(task as Map<String, dynamic>))
+        .toList(),
+  );
+}
+
+class AiPlanSection {
+  const AiPlanSection({
+    required this.title,
+    required this.body,
+  });
+
+  final String title;
+  final String body;
+
+  Map<String, dynamic> toJson() => {
+    'title': title,
+    'body': body,
+  };
+
+  factory AiPlanSection.fromJson(Map<String, dynamic> json) => AiPlanSection(
+    title: (json['title'] as String?) ?? 'Section',
+    body: (json['body'] as String?) ?? '',
+  );
+}

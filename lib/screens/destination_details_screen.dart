@@ -718,10 +718,16 @@ class _BottomActionArea extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, MediaQuery.paddingOf(context).bottom + 16),
+      padding: EdgeInsets.fromLTRB(24, 16, 24, MediaQuery.paddingOf(context).bottom + 16),
       decoration: BoxDecoration(
         color: scheme.surface,
-        border: Border(top: BorderSide(color: scheme.outline.withValues(alpha: 0.18))),
+        boxShadow: [
+          BoxShadow(
+            color: scheme.onSurface.withValues(alpha: 0.04),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -730,28 +736,33 @@ class _BottomActionArea extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: onTripToggle,
               style: FilledButton.styleFrom(
-                backgroundColor: inTrip ? EthioColors.secondary : EthioColors.primary,
-                minimumSize: const Size.fromHeight(60),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                backgroundColor: inTrip ? scheme.secondary : scheme.primary,
+                minimumSize: const Size.fromHeight(64),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
                 elevation: 0,
               ),
-              icon: Icon(inTrip ? Icons.check_circle_rounded : Icons.add_circle_outline_rounded),
-              label: Text(inTrip ? 'In Your Trip' : 'Add to Trip', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+              icon: Icon(inTrip ? Icons.check_circle_rounded : Icons.add_rounded, size: 22),
+              label: Text(
+                inTrip ? 'In Your Trip' : 'Add to Trip',
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, letterSpacing: -0.3),
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Container(
+            height: 64,
+            width: 64,
             decoration: BoxDecoration(
-              border: Border.all(color: EthioColors.primary.withValues(alpha: 0.2)),
-              borderRadius: BorderRadius.circular(20),
+              color: scheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(color: scheme.outline.withValues(alpha: 0.1)),
             ),
             child: IconButton(
               onPressed: onFavoriteToggle,
-              iconSize: 28,
-              padding: const EdgeInsets.all(14),
+              iconSize: 26,
               icon: Icon(
                 saved ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                color: saved ? EthioColors.error : EthioColors.primary,
+                color: saved ? EthioColors.error : scheme.primary,
               ),
             ),
           ),

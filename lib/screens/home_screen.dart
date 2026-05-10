@@ -46,13 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final destinations = state.filteredDestinations;
 
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+      padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 84, 20, 20),
       children: [
         _HomeHero(
           favoriteCount: state.favorites.length,
           tripStops: state.tripDestinations.length,
-          isDark: state.themeMode == ThemeMode.dark,
-          onToggleTheme: state.toggleThemeMode,
           onOpenToolkit: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const TravelToolkitScreen()),
           ),
@@ -60,7 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
             MaterialPageRoute<void>(builder: (_) => const SmartTravelFeaturesScreen()),
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 24),
         // 1. Search Bar
         TextField(
           controller: _controller,
@@ -303,16 +301,12 @@ class _HomeHero extends StatelessWidget {
   const _HomeHero({
     required this.favoriteCount,
     required this.tripStops,
-    required this.isDark,
-    required this.onToggleTheme,
     required this.onOpenToolkit,
     required this.onOpenSmartFeatures,
   });
 
   final int favoriteCount;
   final int tripStops;
-  final bool isDark;
-  final VoidCallback onToggleTheme;
   final VoidCallback onOpenToolkit;
   final VoidCallback onOpenSmartFeatures;
 
@@ -335,56 +329,64 @@ class _HomeHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Plan Ethiopia Your Way',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                  ),
-                ),
-              ),
-              FilledButton.tonalIcon(
-                onPressed: onToggleTheme,
-                icon: Icon(isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded),
-                label: Text(isDark ? 'Dark' : 'Light'),
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.18),
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
+          Text(
+            'Plan Ethiopia\nYour Way',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w800,
+              height: 1.1,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 10),
           Text(
             '$favoriteCount saved places • $tripStops planned stops',
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 24),
           Row(
             children: [
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onOpenToolkit,
-                  icon: const Icon(Icons.travel_explore_rounded),
-                  label: const Text('Travel Toolkit'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white70),
+                child: InkWell(
+                  onTap: onOpenToolkit,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.travel_explore_rounded, color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text('Toolkit', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(width: 10),
+              const SizedBox(width: 12),
               Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: onOpenSmartFeatures,
-                  icon: const Icon(Icons.auto_awesome_rounded),
-                  label: const Text('Smart Features'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.white70),
+                child: InkWell(
+                  onTap: onOpenSmartFeatures,
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 20),
+                        SizedBox(width: 8),
+                        Text('Smart AI', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
+                      ],
+                    ),
                   ),
                 ),
               ),
