@@ -212,16 +212,19 @@ class AppState extends ChangeNotifier {
     int budget = 0,
     String notes = '',
   }) {
-    final totalDays = endDate.difference(startDate).inDays + 1;
+    final normalizedStart = DateTime(startDate.year, startDate.month, startDate.day);
+    final normalizedEnd = DateTime(endDate.year, endDate.month, endDate.day);
+    final safeEndDate = normalizedEnd.isBefore(normalizedStart) ? normalizedStart : normalizedEnd;
+    final totalDays = safeEndDate.difference(normalizedStart).inDays + 1;
     final days = List.generate(
       totalDays,
       (i) => TripDayPlan(dayIndex: i),
     );
     _tripPlan = TripPlan(
       name: name.trim().isEmpty ? 'My Trip' : name.trim(),
-      startDate: startDate,
-      endDate: endDate,
-      budget: budget,
+      startDate: normalizedStart,
+      endDate: safeEndDate,
+      budget: budget < 0 ? 0 : budget,
       days: days,
       generalNotes: notes,
     );

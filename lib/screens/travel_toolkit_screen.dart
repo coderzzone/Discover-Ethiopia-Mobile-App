@@ -242,21 +242,22 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
     required IconData icon,
     required VoidCallback onTap,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: EthioColors.surfaceContainerLowest,
+          color: scheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+          border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: EthioColors.primaryContainer.withValues(alpha: 0.30),
-              child: Icon(icon, color: EthioColors.primary),
+              backgroundColor: scheme.primaryContainer.withValues(alpha: 0.30),
+              child: Icon(icon, color: scheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -264,11 +265,11 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: EthioColors.mutedInk)),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: scheme.onSurface.withValues(alpha: 0.55))),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 14),
+            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: scheme.onSurface.withValues(alpha: 0.4)),
           ],
         ),
       ),
@@ -348,21 +349,22 @@ class _CurrencyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.primary.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.currency_exchange_rounded, color: EthioColors.primary),
-              SizedBox(width: 8),
-              Text(
+              Icon(Icons.currency_exchange_rounded, color: scheme.primary),
+              const SizedBox(width: 8),
+              const Text(
                 'Currency Converter (Offline)',
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
@@ -401,7 +403,7 @@ class _CurrencyCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             'Rates last updated: $lastUpdated',
-            style: const TextStyle(fontSize: 12, color: EthioColors.mutedInk),
+            style: TextStyle(fontSize: 12, color: scheme.onSurface.withValues(alpha: 0.55)),
           ),
         ],
       ),
@@ -428,21 +430,22 @@ class _ExpenseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.secondary.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.secondary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.receipt_long_rounded, color: EthioColors.secondary),
-              SizedBox(width: 8),
-              Text(
+              Icon(Icons.receipt_long_rounded, color: scheme.secondary),
+              const SizedBox(width: 8),
+              const Text(
                 'Expense Tracker',
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
@@ -468,9 +471,9 @@ class _ExpenseCard extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton(
                 onPressed: onAddExpense,
-                icon: const Icon(
+                icon: Icon(
                   Icons.add_circle_rounded,
-                  color: EthioColors.secondary,
+                  color: scheme.secondary,
                 ),
               ),
             ],
@@ -517,21 +520,22 @@ class _AssistantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.tertiary.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.tertiary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.smart_toy_rounded, color: EthioColors.tertiary),
-              SizedBox(width: 8),
-              Text(
+              Icon(Icons.smart_toy_rounded, color: scheme.tertiary),
+              const SizedBox(width: 8),
+              const Text(
                 'Ask Offline Assistant',
                 style: TextStyle(fontWeight: FontWeight.w800),
               ),
@@ -574,10 +578,11 @@ class _SimpleListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: color.withValues(alpha: 0.2)),
       ),
@@ -629,21 +634,22 @@ class _StoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             subtitle,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
-              color: EthioColors.mutedInk,
+              color: scheme.onSurface.withValues(alpha: 0.55),
               fontWeight: FontWeight.w700,
             ),
           ),

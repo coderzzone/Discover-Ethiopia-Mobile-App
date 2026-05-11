@@ -6,7 +6,6 @@ import 'package:geolocator/geolocator.dart';
 import '../data/travel_features_data.dart';
 import '../models/travel_features_models.dart';
 import 'amharic_phrasebook_screen.dart';
-import '../widgets/ui_components.dart';
 
 class SmartTravelFeaturesScreen extends StatefulWidget {
   const SmartTravelFeaturesScreen({super.key});
@@ -72,12 +71,13 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
 
   Widget _bankLocatorCard() {
     final branches = _sortedBranches(_selectedBank.branches);
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,7 +108,7 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
           ),
           if (_locationError != null) ...[
             const SizedBox(height: 8),
-            Text(_locationError!, style: const TextStyle(color: EthioColors.error, fontWeight: FontWeight.w600)),
+            Text(_locationError!, style: TextStyle(color: scheme.error, fontWeight: FontWeight.w600)),
           ],
           const SizedBox(height: 10),
           Text('${_selectedBank.name} branches', style: const TextStyle(fontWeight: FontWeight.w700)),
@@ -117,7 +117,7 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
             final distance = _distanceKm(branch);
             return ListTile(
               contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.account_balance_rounded, color: EthioColors.primary),
+              leading: Icon(Icons.account_balance_rounded, color: scheme.primary),
               title: Text(branch.name, style: const TextStyle(fontWeight: FontWeight.w700)),
               subtitle: Text('${branch.city} • ${branch.address}${distance == null ? '' : '\n${distance.toStringAsFixed(1)} km away'}'),
             );
@@ -172,21 +172,22 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
     required IconData icon,
     required VoidCallback onTap,
   }) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: EthioColors.surfaceContainerLowest,
+          color: scheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+          border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: const Color.fromARGB(255, 27, 27, 26).withValues(alpha: 0.3),
-              child: Icon(icon, color: EthioColors.primary),
+              backgroundColor: scheme.primaryContainer.withValues(alpha: 0.3),
+              child: Icon(icon, color: scheme.primary),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -195,11 +196,11 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
                 children: [
                   Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(color: EthioColors.mutedInk, fontSize: 12)),
+                  Text(subtitle, style: TextStyle(color: scheme.onSurface.withValues(alpha: 0.55), fontSize: 12)),
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: scheme.onSurface.withValues(alpha: 0.4)),
           ],
         ),
       ),
@@ -208,12 +209,13 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
 
   Widget _packingCard(List<PackingItem> checklist) {
     final completion = checklist.isEmpty ? 0.0 : _packingDone.length / checklist.length;
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,12 +255,13 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
   }
 
   Widget _comparisonCard(DestinationCompare quizPick) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,7 +335,7 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
             width: double.infinity,
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: EthioColors.secondaryContainer.withValues(alpha: 0.25),
+              color: scheme.secondaryContainer.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text('Best match: ${quizPick.name} | Recommended duration: ${quizPick.recommendedDuration}'),

@@ -4,56 +4,84 @@ import 'package:flutter/material.dart';
 
 import '../models/app_models.dart';
 
+// ── Color Constants (updated to new palette) ─────────────────────────────────
+// These are light-mode reference values for non-context-aware use cases only.
+// In widgets, always prefer Theme.of(context).colorScheme.* instead.
 class EthioColors {
-  static const Color background = Color(0xFFFBF8F2);
-  static const Color surface = Color(0xFFF4EEE4);
-  static const Color surfaceContainer = Color(0xFFF0E9DD);
-  static const Color surfaceContainerHigh = Color(0xFFE8DFD1);
+  // Primary — Deep Teal
+  static const Color primary = Color(0xFF1B6B93);
+  static const Color primaryContainer = Color(0xFFD0EFFF);
+  static const Color onPrimaryContainer = Color(0xFF003550);
+
+  // Secondary — Warm Amber
+  static const Color secondary = Color(0xFFE07B39);
+  static const Color secondaryContainer = Color(0xFFFFE4CC);
+  static const Color onSecondaryContainer = Color(0xFF4A2000);
+
+  // Tertiary — Emerald
+  static const Color tertiary = Color(0xFF2D8F6F);
+  static const Color tertiaryContainer = Color(0xFFC8F5E3);
+  static const Color onTertiaryContainer = Color(0xFF003828);
+
+  // Surfaces
+  static const Color background = Color(0xFFF4F8FB);
+  static const Color surface = Color(0xFFECF3F8);
+  static const Color surfaceContainer = Color(0xFFECF3F8);
+  static const Color surfaceContainerHigh = Color(0xFFDDE8EF);
+  static const Color surfaceContainerHighest = Color(0xFFDDE8EF);
   static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-  static const Color surfaceContainerLow = Color(0xFFF8F3EB);
-  static const Color primary = Color(0xFFA5542A);
-  static const Color primaryContainer = Color(0xFFF1D8CA);
-  static const Color onPrimaryContainer = Color(0xFF6C310F);
-  static const Color secondary = Color(0xFF476B4E);
-  static const Color secondaryContainer = Color(0xFFE0EFD9);
-  static const Color onSecondaryContainer = Color(0xFF35523A);
-  static const Color tertiary = Color(0xFF7E6400);
-  static const Color tertiaryContainer = Color(0xFFF2E3AA);
-  static const Color onTertiaryContainer = Color(0xFF594500);
-  static const Color ink = Color(0xFF1B1C19);
-  static const Color mutedInk = Color(0xFF6B625A);
-  static const Color outline = Color(0xFF8A7A71);
-  static const Color error = Color(0xFFBA1A1A);
+  static const Color surfaceContainerLow = Color(0xFFF2F7FA);
+
+  // Text & UI
+  static const Color ink = Color(0xFF111820);
+  static const Color mutedInk = Color(0xFF5A7080);
+  static const Color outline = Color(0xFF6A8FA4);
+  static const Color error = Color(0xFFD42F2F);
 }
 
+// ── Spacing System ────────────────────────────────────────────────────────────
+class EthioSpacing {
+  static const double xs = 4;
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 20;
+  static const double xxl = 24;
+  static const double section = 32;
+}
+
+// ── Offline Chip ──────────────────────────────────────────────────────────────
 class OfflineChip extends StatelessWidget {
   const OfflineChip({
     super.key,
     required this.label,
-    this.color = EthioColors.secondary,
+    this.color,
   });
 
   final String label;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final c = color ?? scheme.secondary;
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+          horizontal: EthioSpacing.lg, vertical: EthioSpacing.sm),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
+        color: c.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: color.withValues(alpha: 0.18)),
+        border: Border.all(color: c.withValues(alpha: 0.2)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.wifi_off_rounded, size: 15, color: color),
-          const SizedBox(width: 8),
+          Icon(Icons.wifi_off_rounded, size: 15, color: c),
+          const SizedBox(width: EthioSpacing.sm),
           Text(
             label.toUpperCase(),
             style: TextStyle(
-              color: color,
+              color: c,
               fontSize: 11,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.8,
@@ -65,6 +93,7 @@ class OfflineChip extends StatelessWidget {
   }
 }
 
+// ── Section Header ────────────────────────────────────────────────────────────
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
@@ -81,6 +110,7 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -90,10 +120,11 @@ class SectionHeader extends StatelessWidget {
             children: [
               Text(title, style: Theme.of(context).textTheme.headlineSmall),
               if (subtitle != null) ...[
-                const SizedBox(height: 4),
+                const SizedBox(height: EthioSpacing.xs),
                 Text(
                   subtitle!,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: EthioColors.mutedInk),
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: scheme.onSurface.withValues(alpha: 0.55)),
                 ),
               ],
             ],
@@ -103,17 +134,19 @@ class SectionHeader extends StatelessWidget {
           TextButton(
             onPressed: onAction,
             style: TextButton.styleFrom(
-              foregroundColor: EthioColors.primary,
+              foregroundColor: scheme.primary,
               padding: EdgeInsets.zero,
               visualDensity: VisualDensity.compact,
             ),
-            child: Text(actionLabel!, style: const TextStyle(fontWeight: FontWeight.w700)),
+            child: Text(actionLabel!,
+                style: const TextStyle(fontWeight: FontWeight.w700)),
           ),
       ],
     );
   }
 }
 
+// ── Category Pill ─────────────────────────────────────────────────────────────
 class CategoryPill extends StatelessWidget {
   const CategoryPill({
     super.key,
@@ -132,22 +165,29 @@ class CategoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background = selected ? color : EthioColors.surfaceContainerLowest;
-    final foreground = selected ? Colors.white : EthioColors.ink;
-    final borderColor = selected ? Colors.transparent : color.withValues(alpha: 0.18);
+    final scheme = Theme.of(context).colorScheme;
+    final background = selected ? scheme.primary : scheme.surfaceContainerLowest;
+    final foreground = selected ? scheme.onPrimary : scheme.onSurface;
+    final borderColor =
+        selected ? Colors.transparent : scheme.outline.withValues(alpha: 0.2);
     return ActionChip(
       onPressed: onTap,
       side: BorderSide(color: borderColor),
       backgroundColor: background,
-      labelPadding: const EdgeInsets.symmetric(horizontal: 8),
+      labelPadding: const EdgeInsets.symmetric(horizontal: EthioSpacing.sm),
       avatar: Icon(icon, size: 18, color: foreground),
-      label: Text(label, style: TextStyle(color: foreground, fontWeight: FontWeight.w700)),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(999)),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      label: Text(label,
+          style: TextStyle(
+              color: foreground, fontWeight: FontWeight.w700)),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(999)),
+      padding: const EdgeInsets.symmetric(
+          horizontal: EthioSpacing.md, vertical: EthioSpacing.sm + 2),
     );
   }
 }
 
+// ── Destination Art ───────────────────────────────────────────────────────────
 class DestinationArt extends StatelessWidget {
   const DestinationArt({
     super.key,
@@ -171,8 +211,9 @@ class DestinationArt extends StatelessWidget {
             destination.imageUrl,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) => Container(
-              color: EthioColors.surfaceContainerHigh,
-              child: const Center(child: Icon(Icons.image_not_supported_rounded, color: EthioColors.mutedInk)),
+              color: destination.accent.withValues(alpha: 0.15),
+              child: Icon(Icons.image_not_supported_rounded,
+                  color: destination.accent.withValues(alpha: 0.6)),
             ),
           ),
           Container(
@@ -181,9 +222,9 @@ class DestinationArt extends StatelessWidget {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withValues(alpha: 0.1),
+                  Colors.black.withValues(alpha: 0.08),
                   Colors.transparent,
-                  Colors.black.withValues(alpha: 0.6),
+                  Colors.black.withValues(alpha: 0.65),
                 ],
               ),
             ),
@@ -197,7 +238,7 @@ class DestinationArt extends StatelessWidget {
               children: [
                 if (showBadge)
                   _ArtBadge(
-                    icon: Icons.location_on, // Replaced dynamic icon since we removed it from Destination
+                    icon: Icons.location_on,
                     label: destination.region,
                   )
                 else
@@ -209,7 +250,9 @@ class DestinationArt extends StatelessWidget {
                     color: Colors.white.withValues(alpha: 0.92),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.bookmark_border_rounded, color: destination.accent, size: compact ? 18 : 22),
+                  child: Icon(Icons.bookmark_border_rounded,
+                      color: destination.accent,
+                      size: compact ? 18 : 22),
                 ),
               ],
             ),
@@ -230,12 +273,12 @@ class DestinationArt extends StatelessWidget {
                     letterSpacing: -0.4,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: EthioSpacing.sm - 2),
                 Text(
                   destination.summary,
                   style: TextStyle(
                     color: Colors.white.withValues(alpha: 0.9),
-                    fontSize: compact ? 13 : 16,
+                    fontSize: compact ? 13 : 15,
                     height: 1.4,
                   ),
                 ),
@@ -248,7 +291,6 @@ class DestinationArt extends StatelessWidget {
   }
 }
 
-
 class _ArtBadge extends StatelessWidget {
   const _ArtBadge({required this.icon, required this.label});
 
@@ -258,17 +300,18 @@ class _ArtBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(
+          horizontal: EthioSpacing.md, vertical: EthioSpacing.sm),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: Colors.white, size: 16),
-          const SizedBox(width: 8),
+          Icon(icon, color: Colors.white, size: 15),
+          const SizedBox(width: EthioSpacing.sm),
           Text(
             label.toUpperCase(),
             style: const TextStyle(
@@ -284,6 +327,7 @@ class _ArtBadge extends StatelessWidget {
   }
 }
 
+// ── Destination Card ──────────────────────────────────────────────────────────
 class DestinationCard extends StatelessWidget {
   const DestinationCard({
     super.key,
@@ -298,6 +342,7 @@ class DestinationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(30),
@@ -308,7 +353,7 @@ class DestinationCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(30),
             boxShadow: [
               BoxShadow(
-                color: EthioColors.ink.withValues(alpha: 0.06),
+                color: scheme.onSurface.withValues(alpha: 0.08),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -321,43 +366,56 @@ class DestinationCard extends StatelessWidget {
   }
 }
 
+// ── Stat Tile ─────────────────────────────────────────────────────────────────
 class StatTile extends StatelessWidget {
   const StatTile({
     super.key,
     required this.label,
     required this.value,
     required this.icon,
-    this.color = EthioColors.primary,
+    this.color,
   });
 
   final String label;
   final String value;
   final IconData icon;
-  final Color color;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final c = color ?? scheme.primary;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(EthioSpacing.lg),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: c.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withValues(alpha: 0.14)),
+        border: Border.all(color: c.withValues(alpha: 0.15)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: color),
-          const SizedBox(height: 18),
-          Text(label.toUpperCase(), style: Theme.of(context).textTheme.labelSmall?.copyWith(color: EthioColors.mutedInk)),
-          const SizedBox(height: 6),
-          Text(value, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+          Icon(icon, color: c),
+          const SizedBox(height: EthioSpacing.lg + 2),
+          Text(label.toUpperCase(),
+              style: Theme.of(context)
+                  .textTheme
+                  .labelSmall
+                  ?.copyWith(
+                      color: scheme.onSurface.withValues(alpha: 0.55))),
+          const SizedBox(height: EthioSpacing.sm - 2),
+          Text(value,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w800)),
         ],
       ),
     );
   }
 }
 
+// ── Timeline Card ─────────────────────────────────────────────────────────────
 class TimelineCard extends StatelessWidget {
   const TimelineCard({super.key, required this.day, this.trailing});
 
@@ -366,12 +424,13 @@ class TimelineCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(EthioSpacing.xl - 2),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+        color: scheme.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.1)),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -380,38 +439,57 @@ class TimelineCard extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              color: EthioColors.primaryContainer.withValues(alpha: 0.34),
+              color: scheme.primaryContainer.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(18),
             ),
-            child: Icon(day.icon, color: EthioColors.primary),
+            child: Icon(day.icon, color: scheme.primary),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: EthioSpacing.lg),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(day.dayLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: EthioColors.secondary)),
-                const SizedBox(height: 4),
-                Text(day.title, style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
-                const SizedBox(height: 4),
-                Text(day.subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: EthioColors.mutedInk)),
-                const SizedBox(height: 10),
+                Text(day.dayLabel,
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelSmall
+                        ?.copyWith(color: scheme.secondary)),
+                const SizedBox(height: EthioSpacing.xs),
+                Text(day.title,
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w800)),
+                const SizedBox(height: EthioSpacing.xs),
+                Text(day.subtitle,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium
+                        ?.copyWith(
+                            color: scheme.onSurface.withValues(alpha: 0.55))),
+                const SizedBox(height: EthioSpacing.sm + 2),
                 Row(
                   children: [
-                    Icon(Icons.schedule_rounded, size: 16, color: EthioColors.tertiary),
-                    const SizedBox(width: 6),
-                    Text(day.timeRange, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    const SizedBox(width: 16),
-                    Icon(Icons.payments_outlined, size: 16, color: EthioColors.secondary),
-                    const SizedBox(width: 6),
-                    Text(day.cost, style: const TextStyle(fontWeight: FontWeight.w600)),
+                    Icon(Icons.schedule_rounded,
+                        size: 16, color: scheme.tertiary),
+                    const SizedBox(width: EthioSpacing.sm - 2),
+                    Text(day.timeRange,
+                        style:
+                            const TextStyle(fontWeight: FontWeight.w600)),
+                    const SizedBox(width: EthioSpacing.lg),
+                    Icon(Icons.payments_outlined,
+                        size: 16, color: scheme.secondary),
+                    const SizedBox(width: EthioSpacing.sm - 2),
+                    Text(day.cost,
+                        style:
+                            const TextStyle(fontWeight: FontWeight.w600)),
                   ],
                 ),
               ],
             ),
           ),
           if (trailing != null) ...[
-            const SizedBox(width: 12),
+            const SizedBox(width: EthioSpacing.md),
             trailing!,
           ],
         ],
@@ -420,6 +498,7 @@ class TimelineCard extends StatelessWidget {
   }
 }
 
+// ── Map Preview ───────────────────────────────────────────────────────────────
 class MapPreview extends StatelessWidget {
   const MapPreview({super.key, this.height = 430});
 
@@ -458,14 +537,15 @@ class _MapGridOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            EthioColors.surfaceContainerLowest,
-            EthioColors.surfaceContainerLow.withValues(alpha: 0.92),
+            scheme.surfaceContainerLowest,
+            scheme.surfaceContainerLow.withValues(alpha: 0.92),
           ],
         ),
       ),
@@ -490,7 +570,7 @@ class _MapPinWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: pin.color.withValues(alpha: 0.28),
+                color: pin.color.withValues(alpha: 0.3),
                 blurRadius: 16,
                 offset: const Offset(0, 8),
               ),
@@ -500,34 +580,45 @@ class _MapPinWidget extends StatelessWidget {
         ),
         Container(width: 2, height: 14, color: pin.color),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+              horizontal: EthioSpacing.md, vertical: EthioSpacing.sm),
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.96),
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+            border: Border.all(
+                color: Theme.of(context)
+                    .colorScheme
+                    .outline
+                    .withValues(alpha: 0.12)),
             boxShadow: [
               BoxShadow(
-                color: EthioColors.ink.withValues(alpha: 0.05),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.06),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
             ],
           ),
-          child: Text(pin.name, style: const TextStyle(fontWeight: FontWeight.w700)),
+          child: Text(pin.name,
+              style: const TextStyle(fontWeight: FontWeight.w700)),
         ),
       ],
     );
   }
 }
 
+// ── Map Painter ───────────────────────────────────────────────────────────────
 class OfflineMapPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final backgroundPaint = Paint()..color = EthioColors.surfaceContainerLow;
+    final backgroundPaint = Paint()
+      ..color = EthioColors.surfaceContainerLow;
     canvas.drawRect(Offset.zero & size, backgroundPaint);
 
     final gridPaint = Paint()
-      ..color = EthioColors.outline.withValues(alpha: 0.10)
+      ..color = EthioColors.outline.withValues(alpha: 0.08)
       ..strokeWidth = 1;
 
     const gridStep = 38.0;
@@ -539,19 +630,21 @@ class OfflineMapPainter extends CustomPainter {
     }
 
     final roadPaint = Paint()
-      ..color = EthioColors.outline.withValues(alpha: 0.30)
+      ..color = EthioColors.outline.withValues(alpha: 0.25)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 12
       ..strokeCap = StrokeCap.round;
 
     final path = Path()
       ..moveTo(0, size.height * 0.36)
-      ..quadraticBezierTo(size.width * 0.32, size.height * 0.32, size.width * 0.47, size.height * 0.58)
-      ..quadraticBezierTo(size.width * 0.60, size.height * 0.76, size.width, size.height * 0.56);
+      ..quadraticBezierTo(size.width * 0.32, size.height * 0.32,
+          size.width * 0.47, size.height * 0.58)
+      ..quadraticBezierTo(
+          size.width * 0.60, size.height * 0.76, size.width, size.height * 0.56);
     canvas.drawPath(path, roadPaint);
 
     final trailPaint = Paint()
-      ..color = EthioColors.primary.withValues(alpha: 0.38)
+      ..color = EthioColors.primary.withValues(alpha: 0.35)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 5
       ..strokeCap = StrokeCap.round;
@@ -561,8 +654,12 @@ class OfflineMapPainter extends CustomPainter {
       ..lineTo(size.width * 0.74, size.height);
     canvas.drawPath(trailPath, trailPaint);
 
-    final circlePaint = Paint()..color = EthioColors.secondaryContainer.withValues(alpha: 0.55);
-    canvas.drawCircle(Offset(size.width * 0.5, size.height * 0.55), math.min(size.width, size.height) * 0.18, circlePaint);
+    final circlePaint = Paint()
+      ..color = EthioColors.secondaryContainer.withValues(alpha: 0.5);
+    canvas.drawCircle(
+        Offset(size.width * 0.5, size.height * 0.55),
+        math.min(size.width, size.height) * 0.18,
+        circlePaint);
   }
 
   @override

@@ -22,7 +22,7 @@ class FavoritesScreen extends StatelessWidget {
             Expanded(
               child: Text(AppLocalization.tr(context, 'saved_places'), style: Theme.of(context).textTheme.headlineMedium),
             ),
-            OfflineChip(label: '${favorites.length} saved', color: EthioColors.secondary),
+            OfflineChip(label: '${favorites.length} saved'),
           ],
         ),
         const SizedBox(height: 14),
@@ -30,10 +30,10 @@ class FavoritesScreen extends StatelessWidget {
           spacing: 10,
           runSpacing: 10,
           children: [
-            CategoryPill(label: 'All', icon: Icons.filter_alt_outlined, color: EthioColors.primary, selected: true),
-            CategoryPill(label: 'Destinations', icon: Icons.landscape_outlined, color: EthioColors.secondary),
-            CategoryPill(label: 'Hotels', icon: Icons.hotel_outlined, color: EthioColors.tertiary),
-            CategoryPill(label: 'Cultural Sites', icon: Icons.account_balance_outlined, color: EthioColors.ink),
+            CategoryPill(label: 'All', icon: Icons.filter_alt_outlined, color: Theme.of(context).colorScheme.primary, selected: true),
+            CategoryPill(label: 'Destinations', icon: Icons.landscape_outlined, color: Theme.of(context).colorScheme.tertiary),
+            CategoryPill(label: 'Hotels', icon: Icons.hotel_outlined, color: Theme.of(context).colorScheme.secondary),
+            CategoryPill(label: 'Cultural Sites', icon: Icons.account_balance_outlined, color: Theme.of(context).colorScheme.primary),
           ],
         ),
         const SizedBox(height: 18),
@@ -48,7 +48,7 @@ class FavoritesScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.bookmark_border_rounded, color: EthioColors.primary),
+                Icon(Icons.bookmark_border_rounded, color: scheme.primary),
                 const SizedBox(height: 12),
                 Text(AppLocalization.tr(context, 'no_saved_places'), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800)),
                 const SizedBox(height: 6),

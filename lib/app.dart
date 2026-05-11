@@ -63,17 +63,17 @@ class EthioExploreShell extends StatefulWidget {
 class _EthioExploreShellState extends State<EthioExploreShell> {
   int _selectedIndex = 0;
 
-  final _pages = const [
-    HomeScreen(),
-    TripPlannerScreen(),
-    AiTripPlannerScreen(),
-    SavedPlansScreen(),
-    FavoritesScreen(),
-    DirectoryScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final pages = const <Widget>[
+      HomeScreen(key: ValueKey('tab-home')),
+      TripPlannerScreen(key: ValueKey('tab-trip')),
+      AiTripPlannerScreen(key: ValueKey('tab-ai-trip')),
+      SavedPlansScreen(key: ValueKey('tab-saved-plans')),
+      FavoritesScreen(key: ValueKey('tab-favorites')),
+      DirectoryScreen(key: ValueKey('tab-directory')),
+    ];
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       extendBodyBehindAppBar: true,
@@ -121,7 +121,7 @@ class _EthioExploreShellState extends State<EthioExploreShell> {
           ),
         ],
       ),
-      body: IndexedStack(index: _selectedIndex, children: _pages),
+      body: IndexedStack(index: _selectedIndex, children: pages),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _selectedIndex,
         onDestinationSelected: (index) => setState(() => _selectedIndex = index),

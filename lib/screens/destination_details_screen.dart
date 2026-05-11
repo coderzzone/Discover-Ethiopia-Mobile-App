@@ -407,17 +407,18 @@ class _FactChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.12)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.12)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: EthioColors.primary),
+          Icon(icon, size: 16, color: scheme.primary),
           const SizedBox(width: 8),
           Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
           Text(value, style: const TextStyle(fontSize: 12)),
@@ -454,12 +455,13 @@ class _EssentialsGrid extends StatelessWidget {
       ),
       itemBuilder: (context, index) {
         final item = cards[index];
+        final scheme = Theme.of(context).colorScheme;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: EthioColors.surfaceContainerLowest,
+            color: scheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: EthioColors.outline.withValues(alpha: 0.1)),
+            border: Border.all(color: scheme.outline.withValues(alpha: 0.1)),
           ),
           child: Row(
             children: [
@@ -474,7 +476,7 @@ class _EssentialsGrid extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(item.title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: EthioColors.mutedInk)),
+                    Text(item.title, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: scheme.onSurface.withValues(alpha: 0.55))),
                     const SizedBox(height: 3),
                     Text(item.value, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 12)),
                   ],
@@ -496,10 +498,11 @@ class _TravelNoteRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -622,15 +625,16 @@ class _HeaderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(32),
         boxShadow: [
           BoxShadow(
-            color: EthioColors.ink.withValues(alpha: 0.1),
+            color: scheme.onSurface.withValues(alpha: 0.08),
             blurRadius: 30,
             offset: const Offset(0, 15),
           ),
@@ -657,12 +661,12 @@ class _HeaderCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        const Icon(Icons.location_on, size: 18, color: EthioColors.primary),
+                        Icon(Icons.location_on, size: 18, color: scheme.primary),
                         const SizedBox(width: 4),
                         Text(
                           destination.region,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: EthioColors.mutedInk,
+                                color: scheme.onSurface.withValues(alpha: 0.55),
                                 fontWeight: FontWeight.w500,
                               ),
                         ),
@@ -673,7 +677,7 @@ class _HeaderCard extends StatelessWidget {
               ),
               _RoundIconButton(
                 icon: Icons.share_rounded,
-                color: EthioColors.primary,
+                color: scheme.primary,
                 onTap: () {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(behavior: SnackBarBehavior.floating, content: Text('Link copied to clipboard')),
@@ -684,13 +688,13 @@ class _HeaderCard extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20),
-            child: Divider(height: 1, color: EthioColors.ink.withValues(alpha: 0.1)),
+            child: Divider(height: 1, color: scheme.outline.withValues(alpha: 0.1)),
           ),
           Text(
             destination.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   height: 1.6,
-                  color: EthioColors.ink.withValues(alpha: 0.8),
+                  color: scheme.onSurface.withValues(alpha: 0.82),
                 ),
           ),
         ],
@@ -794,16 +798,18 @@ class _ContentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest.withValues(alpha: 0.5),
+        color: scheme.surfaceContainerLowest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(height: 1.7, color: EthioColors.ink),
+        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            height: 1.7, color: scheme.onSurface.withValues(alpha: 0.82)),
       ),
     );
   }
@@ -868,26 +874,28 @@ class _InfoPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.05)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.08)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: EthioColors.primary.withValues(alpha: 0.1),
-            child: Icon(icon, size: 18, color: EthioColors.primary),
+            backgroundColor: scheme.primary.withValues(alpha: 0.1),
+            child: Icon(icon, size: 18, color: scheme.primary),
           ),
           const SizedBox(width: 14),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: EthioColors.mutedInk, letterSpacing: 0.5)),
+              Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  color: scheme.onSurface.withValues(alpha: 0.55), letterSpacing: 0.5)),
               const SizedBox(height: 2),
               Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
             ],

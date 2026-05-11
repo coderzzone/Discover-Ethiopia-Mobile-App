@@ -14,7 +14,7 @@ class AiTripPlannerScreen extends StatefulWidget {
 
 class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerProviderStateMixin {
   final GeminiTripPlannerService _plannerService = GeminiTripPlannerService();
-  final TextEditingController _questionsCtrl = TextEditingController();
+  String _customQuestions = '';
 
   double _days = 5;
   double _budget = 15000;
@@ -62,11 +62,12 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
     _orbController.dispose();
     _staggerController.dispose();
     _phraseTimer?.cancel();
-    _questionsCtrl.dispose();
     super.dispose();
   }
 
   Future<void> _generate() async {
+    _phraseTimer?.cancel();
+    _phraseTimer = null;
     setState(() {
       _loading = true;
       _resultSections = [];
@@ -87,7 +88,7 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
         interests: _interests,
         travelerStyle: _travelStyle,
         season: _season,
-        customQuestions: _questionsCtrl.text.trim(),
+        customQuestions: _customQuestions.trim(),
       );
 
       if (!mounted) return;
@@ -97,10 +98,12 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
         _loading = false;
       });
       _phraseTimer?.cancel();
+      _phraseTimer = null;
       _staggerController.forward(from: 0);
     } catch (e, st) {
       if (!mounted) return;
       _phraseTimer?.cancel();
+      _phraseTimer = null;
       setState(() {
         _loading = false;
         _resultSections = [
@@ -157,9 +160,15 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) return _buildLoadingView(context);
-    if (_resultSections.isNotEmpty) return _buildResultView(context);
-    return _buildInputView(context);
+    final viewIndex = _loading ? 1 : (_resultSections.isNotEmpty ? 2 : 0);
+    return IndexedStack(
+      index: viewIndex,
+      children: [
+        _buildInputView(context),
+        _buildLoadingView(context),
+        _buildResultView(context),
+      ],
+    );
   }
 
   Widget _buildInputView(BuildContext context) {
@@ -231,9 +240,10 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
 
         _buildSectionTitle('Special Requests', ''),
         const SizedBox(height: 12),
-        TextField(
-          controller: _questionsCtrl,
+        TextFormField(
+          initialValue: _customQuestions,
           maxLines: 3,
+          onChanged: (value) => _customQuestions = value,
           decoration: InputDecoration(
             hintText: 'E.g., I love spicy food, avoid long hikes, traveling with a toddler...',
             filled: true,
@@ -406,7 +416,6 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
               child: IconButton(
                 icon: Icon(Icons.refresh_rounded, color: scheme.primary),
                 onPressed: () => setState(() => _resultSections = []),
-                tooltip: 'Start Over',
               ),
             ),
           ],
@@ -465,7 +474,7 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
                     ],
                   ),
                   const SizedBox(height: 18),
-                  SelectableText(
+                  Text(
                     section.body.isEmpty ? 'No details returned for this section.' : section.body,
                     style: TextStyle(color: scheme.onSurface.withValues(alpha: 0.8), height: 1.6, fontSize: 15),
                   ),
@@ -496,9 +505,12 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
                 title: '${_days.toInt()}-Day $_interests Plan',
                 sections: _resultSections,
               );
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Plan saved to Saved Plans.')),
-              );
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Plan saved to Saved Plans.')),
+                );
+              });
             },
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(64),

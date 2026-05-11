@@ -257,7 +257,7 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                   Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
-                    color: EthioColors.surfaceContainerLowest,
+                    color: scheme.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
                   ),

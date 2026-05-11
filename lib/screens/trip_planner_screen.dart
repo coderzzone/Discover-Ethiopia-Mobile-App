@@ -32,6 +32,7 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
     final state = AppStateScope.watch(context);
     final plan = state.tripPlan;
     final completion = _packingDone.length / _packingItems.length;
+    final scheme = Theme.of(context).colorScheme;
 
     return ListView(
       padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 84, 20, 40),
@@ -39,8 +40,19 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: EthioColors.primary,
+            gradient: LinearGradient(
+              colors: [scheme.primary, scheme.primaryContainer.withValues(alpha: 0.7)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
             borderRadius: BorderRadius.circular(30),
+            boxShadow: [
+              BoxShadow(
+                color: scheme.primary.withValues(alpha: 0.3),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +83,7 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                       onPressed: () => _showCreateTripDialog(context),
                       style: FilledButton.styleFrom(
                         backgroundColor: Colors.white,
-                        foregroundColor: EthioColors.primary,
+                        foregroundColor: scheme.primary,
                       ),
                       icon: const Icon(Icons.add_rounded, size: 18),
                       label: Text(AppLocalization.tr(context, 'create_new_trip')),
@@ -106,6 +118,7 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _DayCard(
+                  key: ValueKey('trip-day-card-$dayIdx'),
                   dayIndex: dayIdx,
                   dateLabel: '${date.day}/${date.month}/${date.year}',
                   stops: dayStops,
@@ -158,10 +171,10 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(22),
                   border: Border.all(
-                    color: inTrip ? EthioColors.secondary : EthioColors.outline.withValues(alpha: 0.10),
+                    color: inTrip ? scheme.secondary : scheme.outline.withValues(alpha: 0.10),
                     width: inTrip ? 2 : 1,
                   ),
-                  color: EthioColors.surfaceContainerLowest,
+                  color: scheme.surfaceContainerLowest,
                 ),
                 child: Column(
                   children: [
@@ -183,7 +196,13 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                         children: [
                           Text(dest.name, style: const TextStyle(fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 3),
-                          Text(dest.entryFee, style: const TextStyle(color: EthioColors.mutedInk, fontSize: 12)),
+                          Text(
+                            dest.entryFee,
+                            style: TextStyle(
+                              color: scheme.onSurface.withValues(alpha: 0.6),
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -198,18 +217,19 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
   }
 
   Widget _readinessCard(double completion) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.10)),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              const Icon(Icons.checklist_rtl_rounded, color: EthioColors.secondary),
+              Icon(Icons.checklist_rtl_rounded, color: scheme.secondary),
               const SizedBox(width: 8),
               const Expanded(child: Text('Trip Readiness', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16))),
               Text('${(completion * 100).round()}%', style: const TextStyle(fontWeight: FontWeight.w800)),
@@ -221,8 +241,8 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
             child: LinearProgressIndicator(
               value: completion,
               minHeight: 8,
-              color: EthioColors.secondary,
-              backgroundColor: EthioColors.secondary.withValues(alpha: 0.15),
+              color: scheme.secondary,
+              backgroundColor: scheme.secondary.withValues(alpha: 0.15),
             ),
           ),
           const SizedBox(height: 12),
@@ -241,7 +261,18 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                   }
                 }),
                 label: Text(item),
-                selectedColor: EthioColors.secondary.withValues(alpha: 0.16),
+                labelStyle: TextStyle(
+                  color: done ? scheme.onSecondaryContainer : scheme.onSurface,
+                  fontWeight: FontWeight.w600,
+                ),
+                backgroundColor: scheme.surfaceContainerLow,
+                selectedColor: scheme.secondaryContainer.withValues(alpha: 0.5),
+                checkmarkColor: scheme.secondary,
+                side: BorderSide(
+                  color: done
+                      ? scheme.secondary.withValues(alpha: 0.45)
+                      : scheme.outline.withValues(alpha: 0.2),
+                ),
               );
             }).toList(),
           ),
@@ -251,12 +282,13 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
   }
 
   Widget _costCard(BuildContext context, dynamic state, TripPlan plan) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.10)),
       ),
       child: Column(
         children: [
@@ -269,7 +301,8 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                     Text(AppLocalization.tr(context, 'estimated_cost')),
                     const SizedBox(height: 6),
                     Text('ETB ${state.estimatedTripCost.toStringAsFixed(0)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-                    Text('${state.tripDestinations.length} stops', style: const TextStyle(fontSize: 12, color: EthioColors.mutedInk)),
+                    Text('${state.tripDestinations.length} stops',
+                        style: TextStyle(fontSize: 12, color: scheme.onSurface.withValues(alpha: 0.55))),
                   ],
                 ),
               ),
@@ -283,26 +316,26 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
                       state.estimatedTripCost > plan.budget ? 'Over budget' : 'On track',
                       style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: state.estimatedTripCost > plan.budget ? EthioColors.error : EthioColors.secondary,
+                        color: state.estimatedTripCost > plan.budget ? scheme.error : scheme.secondary,
                       ),
                     ),
                   ],
                 ),
             ],
           ),
-
         ],
       ),
     );
   }
 
   Widget _emptyTripCard() {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(26),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+        border: Border.all(color: scheme.outline.withValues(alpha: 0.10)),
       ),
       child: FilledButton.icon(
         onPressed: () => _showCreateTripDialog(context),
@@ -314,81 +347,24 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
 
   Future<void> _showCreateTripDialog(BuildContext context) async {
     final state = AppStateScope.read(context);
-    final nameCtrl = TextEditingController(text: state.tripPlan.name);
-    final budgetCtrl = TextEditingController(text: state.tripPlan.budget > 0 ? state.tripPlan.budget.toString() : '');
-    DateTime startDate = state.tripPlan.startDate;
-    DateTime endDate = state.tripPlan.endDate;
-
-    await showModalBottomSheet<void>(
+    final result = await showModalBottomSheet<_CreateTripInput>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (sheetCtx) => StatefulBuilder(
-        builder: (ctx, setS) => Container(
-          padding: EdgeInsets.fromLTRB(20, 8, 20, MediaQuery.viewInsetsOf(ctx).bottom + 30),
-          decoration: const BoxDecoration(
-            color: EthioColors.surfaceContainerLowest,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
-          ),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Trip Name')),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _DatePickerField(
-                        label: 'Start Date',
-                        date: startDate,
-                        onPick: (d) => setS(() {
-                          startDate = d;
-                          if (endDate.isBefore(d)) endDate = d.add(const Duration(days: 1));
-                        }),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _DatePickerField(
-                        label: 'End Date',
-                        date: endDate,
-                        onPick: (d) => setS(() => endDate = d),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  controller: budgetCtrl,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Budget (ETB)'),
-                ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () {
-                    state.createNewTrip(
-                      name: nameCtrl.text,
-                      startDate: startDate,
-                      endDate: endDate,
-                      budget: int.tryParse(budgetCtrl.text.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0,
-                    );
-                    Navigator.pop(sheetCtx);
-                    setState(() {
-                      _expandedDays
-                        ..clear()
-                        ..add(0);
-                    });
-                  },
-                  child: const Text('Create Trip'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      builder: (_) => _CreateTripSheet(initialPlan: state.tripPlan),
     );
-    nameCtrl.dispose();
-    budgetCtrl.dispose();
+    if (!mounted || result == null) return;
+    state.createNewTrip(
+      name: result.name,
+      startDate: result.startDate,
+      endDate: result.endDate,
+      budget: result.budget,
+    );
+    setState(() {
+      _expandedDays
+        ..clear()
+        ..add(0);
+    });
   }
 
   Future<void> _showAddStopSheet(BuildContext context, int dayIdx) async {
@@ -400,9 +376,9 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
       builder: (_) => Container(
         height: MediaQuery.sizeOf(context).height * 0.65,
         padding: const EdgeInsets.fromLTRB(20, 8, 20, 30),
-        decoration: const BoxDecoration(
-          color: EthioColors.surfaceContainerLowest,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         ),
         child: ListView.separated(
           itemCount: sampleDestinations.length,
@@ -410,8 +386,9 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
           itemBuilder: (_, i) {
             final dest = sampleDestinations[i];
             final already = state.destinationsForDay(dayIdx).any((d) => d.id == dest.id);
+            final scheme = Theme.of(context).colorScheme;
             return ListTile(
-              tileColor: already ? EthioColors.secondary.withValues(alpha: 0.08) : EthioColors.surfaceContainerLow,
+              tileColor: already ? scheme.secondaryContainer.withValues(alpha: 0.3) : scheme.surfaceContainerLow,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
               title: Text(dest.name, style: const TextStyle(fontWeight: FontWeight.w800)),
               subtitle: Text(dest.region),
@@ -432,6 +409,7 @@ class _TripPlannerScreenState extends State<TripPlannerScreen> {
 
 class _DayCard extends StatefulWidget {
   const _DayCard({
+    super.key,
     required this.dayIndex,
     required this.dateLabel,
     required this.stops,
@@ -466,21 +444,15 @@ class _DayCard extends StatefulWidget {
 }
 
 class _DayCardState extends State<_DayCard> {
-  late final TextEditingController _notesCtrl;
-
-  @override
-  void initState() {
-    super.initState();
-    _notesCtrl = TextEditingController(text: widget.notes);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: widget.isExpanded ? EthioColors.primary.withValues(alpha: 0.3) : EthioColors.outline.withValues(alpha: 0.10)),
+        border: Border.all(color: widget.isExpanded
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
+            : Theme.of(context).colorScheme.outline.withValues(alpha: 0.10)),
       ),
       child: Column(
         children: [
@@ -504,7 +476,9 @@ class _DayCardState extends State<_DayCard> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8),
                       padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(color: EthioColors.surfaceContainerLow, borderRadius: BorderRadius.circular(14)),
+                      decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceContainerLow,
+                          borderRadius: BorderRadius.circular(14)),
                       child: Column(
                         children: [
                           Row(
@@ -525,7 +499,11 @@ class _DayCardState extends State<_DayCard> {
                               ),
                               IconButton(
                                 onPressed: () => widget.onRemoveStop(dest),
-                                icon: const Icon(Icons.remove_circle_outline_rounded, color: EthioColors.error, size: 20),
+                                icon: Icon(
+                                  Icons.remove_circle_outline_rounded,
+                                  color: Theme.of(context).colorScheme.error,
+                                  size: 20,
+                                ),
                               ),
                             ],
                           ),
@@ -559,8 +537,8 @@ class _DayCardState extends State<_DayCard> {
                     label: const Text('Add Stop'),
                   ),
                   const SizedBox(height: 10),
-                  TextField(
-                    controller: _notesCtrl,
+                  TextFormField(
+                    initialValue: widget.notes,
                     maxLines: 2,
                     decoration: const InputDecoration(hintText: 'Day notes...'),
                     onChanged: widget.onNotesChanged,
@@ -599,13 +577,13 @@ class _TimeChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerLowest,
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
         ),
         child: Row(
           children: [
-            const Icon(Icons.schedule_rounded, size: 15, color: EthioColors.primary),
+            Icon(Icons.schedule_rounded, size: 15, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 6),
             Text('$label: $value', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700)),
           ],
@@ -636,16 +614,125 @@ class _DatePickerField extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
         decoration: BoxDecoration(
-          color: EthioColors.surfaceContainerLow,
+          color: Theme.of(context).colorScheme.surfaceContainerLow,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: EthioColors.outline.withValues(alpha: 0.12)),
+          border: Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.12)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: const TextStyle(fontSize: 11, color: EthioColors.mutedInk, fontWeight: FontWeight.w700)),
+            Text(label, style: TextStyle(fontSize: 11,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55),
+                fontWeight: FontWeight.w700)),
             const SizedBox(height: 4),
             Text('${date.day}/${date.month}/${date.year}', style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CreateTripInput {
+  const _CreateTripInput({
+    required this.name,
+    required this.startDate,
+    required this.endDate,
+    required this.budget,
+  });
+
+  final String name;
+  final DateTime startDate;
+  final DateTime endDate;
+  final int budget;
+}
+
+class _CreateTripSheet extends StatefulWidget {
+  const _CreateTripSheet({required this.initialPlan});
+
+  final TripPlan initialPlan;
+
+  @override
+  State<_CreateTripSheet> createState() => _CreateTripSheetState();
+}
+
+class _CreateTripSheetState extends State<_CreateTripSheet> {
+  late String _name;
+  late String _budgetText;
+  late DateTime _startDate;
+  late DateTime _endDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _name = widget.initialPlan.name;
+    _budgetText = widget.initialPlan.budget > 0 ? widget.initialPlan.budget.toString() : '';
+    _startDate = widget.initialPlan.startDate;
+    _endDate = widget.initialPlan.endDate;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.fromLTRB(20, 8, 20, MediaQuery.viewInsetsOf(context).bottom + 30),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            TextFormField(
+              initialValue: _name,
+              decoration: const InputDecoration(labelText: 'Trip Name'),
+              onChanged: (value) => _name = value,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: _DatePickerField(
+                    label: 'Start Date',
+                    date: _startDate,
+                    onPick: (d) => setState(() {
+                      _startDate = d;
+                      if (_endDate.isBefore(d)) _endDate = d;
+                    }),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _DatePickerField(
+                    label: 'End Date',
+                    date: _endDate,
+                    onPick: (d) => setState(() => _endDate = d.isBefore(_startDate) ? _startDate : d),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              initialValue: _budgetText,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: 'Budget (ETB)'),
+              onChanged: (value) => _budgetText = value,
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () {
+                final safeEndDate = _endDate.isBefore(_startDate) ? _startDate : _endDate;
+                final budget = int.tryParse(_budgetText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
+                Navigator.of(context).pop(
+                  _CreateTripInput(
+                    name: _name,
+                    startDate: _startDate,
+                    endDate: safeEndDate,
+                    budget: budget,
+                  ),
+                );
+              },
+              child: const Text('Create Trip'),
+            ),
           ],
         ),
       ),
