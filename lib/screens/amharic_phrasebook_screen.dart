@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../data/travel_features_data.dart';
 import '../models/travel_features_models.dart';
@@ -15,6 +16,27 @@ class _AmharicPhrasebookScreenState extends State<AmharicPhrasebookScreen> {
   String _activeCategory = 'Greetings';
   String _query = '';
   final Set<String> _savedPhrases = <String>{};
+  final FlutterTts _tts = FlutterTts();
+  String? _currentlyPlaying;
+
+  @override
+  void initState() {
+    super.initState();
+    _configureTts();
+  }
+
+  Future<void> _configureTts() async {
+    await _tts.setLanguage('en-US');
+    await _tts.setSpeechRate(0.42);
+    await _tts.setPitch(1.0);
+    await _tts.awaitSpeakCompletion(true);
+  }
+
+  @override
+  void dispose() {
+    _tts.stop();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -100,13 +122,20 @@ class _AmharicPhrasebookScreenState extends State<AmharicPhrasebookScreen> {
   }
 
   Widget _phraseTile(PhraseItem phrase) {
+    final scheme = Theme.of(context).colorScheme;
+    final isPlaying = _currentlyPlaying == phrase.amharic;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.primaryContainer.withValues(alpha: 0.18),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.2)),
+        border: Border.all(
+          color: isPlaying
+              ? scheme.primary.withValues(alpha: 0.55)
+              : scheme.outline.withValues(alpha: 0.26),
+          width: isPlaying ? 1.8 : 1.0,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -114,15 +143,21 @@ class _AmharicPhrasebookScreenState extends State<AmharicPhrasebookScreen> {
           Row(
             children: [
               Expanded(
-                child: Text(phrase.amharic, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
+                child: Text(
+                  phrase.amharic,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w900,
+                    fontSize: 19,
+                    color: scheme.onSurface,
+                  ),
+                ),
               ),
               IconButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Pronunciation: ${phrase.pronunciation}')),
-                  );
-                },
-                icon: const Icon(Icons.volume_up_rounded),
+                onPressed: () => _playPhrase(phrase),
+                icon: Icon(
+                  isPlaying ? Icons.pause_circle_rounded : Icons.volume_up_rounded,
+                  color: scheme.primary,
+                ),
               ),
               IconButton(
                 onPressed: () {
@@ -138,11 +173,22 @@ class _AmharicPhrasebookScreenState extends State<AmharicPhrasebookScreen> {
               ),
             ],
           ),
-          Text(phrase.english, style: const TextStyle(fontSize: 15)),
+          Text(
+            phrase.english,
+            style: TextStyle(
+              fontSize: 15.5,
+              fontWeight: FontWeight.w700,
+              color: scheme.onSurface.withValues(alpha: 0.9),
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             'Pronunciation: ${phrase.pronunciation}',
-            style: const TextStyle(color: EthioColors.mutedInk, fontSize: 12),
+            style: TextStyle(
+              color: scheme.onSurface.withValues(alpha: 0.72),
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 6),
           Wrap(
@@ -171,6 +217,31 @@ class _AmharicPhrasebookScreenState extends State<AmharicPhrasebookScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _playPhrase(PhraseItem phrase) async {
+    final text = '${phrase.amharic}. ${phrase.english}. Pronounced: ${phrase.pronunciation}.';
+    try {
+      if (_currentlyPlaying == phrase.amharic) {
+        await _tts.stop();
+        if (!mounted) return;
+        setState(() => _currentlyPlaying = null);
+        return;
+      }
+      setState(() => _currentlyPlaying = phrase.amharic);
+      await _tts.stop();
+      await _tts.speak(text);
+      if (!mounted) return;
+      setState(() => _currentlyPlaying = null);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _currentlyPlaying = null);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Audio playback failed on this device. Please check media volume.'),
+        ),
+      );
+    }
   }
 
   void _simulateVoiceIntent() {

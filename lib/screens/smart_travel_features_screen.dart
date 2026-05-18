@@ -1,7 +1,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../data/travel_features_data.dart';
 import '../models/travel_features_models.dart';
@@ -17,6 +19,7 @@ class SmartTravelFeaturesScreen extends StatefulWidget {
 class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
   final Set<String> _packingDone = <String>{};
   final TextEditingController _quizDaysCtrl = TextEditingController(text: '4');
+  final MapController _bankMapController = MapController();
 
   String _region = 'Danakil';
   String _quizBudget = 'Medium';
@@ -24,6 +27,10 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
   BankInfo _selectedBank = ethiopianBanks.first;
   Position? _userPosition;
   String? _locationError;
+  List<_NearbyBankSpot> _nearbyBanks = const [];
+  List<_NearbyBankSpot> _allSelectedBankBranches = const [];
+  bool _showNearbyMap = false;
+  static const double _nearbyRadiusKm = 100;
 
   @override
   void dispose() {
@@ -89,7 +96,15 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
                 .map((bank) => DropdownMenuItem<BankInfo>(value: bank, child: Text('${bank.shortCode} - ${bank.name}')))
                 .toList(),
             onChanged: (value) {
-              if (value != null) setState(() => _selectedBank = value);
+              if (value == null) return;
+              setState(() {
+                _selectedBank = value;
+                if (_userPosition != null) {
+                  _allSelectedBankBranches = _allBranchesForSelectedBank(_userPosition!, _selectedBank);
+                  _nearbyBanks = _filterNearby(_allSelectedBankBranches, _userPosition!);
+                  _showNearbyMap = true;
+                }
+              });
             },
           ),
           const SizedBox(height: 10),
@@ -103,16 +118,155 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
                 label: const Text('Scan My Location'),
               ),
               if (_userPosition != null)
-                Chip(label: Text('Lat ${_userPosition!.latitude.toStringAsFixed(3)}, Lng ${_userPosition!.longitude.toStringAsFixed(3)}')),
+                Chip(
+                  label: Text(
+                    'Lat ${_userPosition!.latitude.toStringAsFixed(3)}, Lng ${_userPosition!.longitude.toStringAsFixed(3)}',
+                  ),
+                ),
             ],
           ),
           if (_locationError != null) ...[
             const SizedBox(height: 8),
             Text(_locationError!, style: TextStyle(color: scheme.error, fontWeight: FontWeight.w600)),
           ],
+          if (_showNearbyMap && _userPosition != null) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Nearby Banks on Map',
+              style: TextStyle(
+                fontWeight: FontWeight.w800,
+                color: scheme.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: SizedBox(
+                height: 280,
+                child: FlutterMap(
+                  mapController: _bankMapController,
+                  options: MapOptions(
+                    initialCenter: LatLng(
+                      _userPosition!.latitude,
+                      _userPosition!.longitude,
+                    ),
+                    initialZoom: 13.4,
+                    minZoom: 4.0,
+                    maxZoom: 18.0,
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      userAgentPackageName: 'com.example.ethio_explore',
+                    ),
+                    MarkerLayer(
+                      markers: [
+                        Marker(
+                          point: LatLng(
+                            _userPosition!.latitude,
+                            _userPosition!.longitude,
+                          ),
+                          width: 54,
+                          height: 54,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: scheme.primary,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 2.5,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.my_location_rounded,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                        ..._allSelectedBankBranches.map(
+                          (spot) => Marker(
+                            point: LatLng(spot.branch.lat, spot.branch.lng),
+                            width: 44,
+                            height: 44,
+                            child: Tooltip(
+                              message:
+                                  '${spot.bank.shortCode} - ${spot.branch.name}\n${spot.branch.address}',
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: scheme.secondary,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 1.8,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.account_balance_rounded,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${_allSelectedBankBranches.length} ${_selectedBank.shortCode} branches mapped',
+              style: TextStyle(
+                color: scheme.onSurface.withValues(alpha: 0.7),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
           const SizedBox(height: 10),
-          Text('${_selectedBank.name} branches', style: const TextStyle(fontWeight: FontWeight.w700)),
+          Text(
+            '${_selectedBank.name} branches',
+            style: const TextStyle(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 8),
+          if (_showNearbyMap && _nearbyBanks.isNotEmpty)
+            ..._nearbyBanks.take(8).map((spot) {
+              final distance = _distanceKm(spot.branch);
+              return ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: Icon(
+                  Icons.place_rounded,
+                  color: scheme.secondary,
+                ),
+                title: Text(
+                  '${spot.bank.shortCode} - ${spot.branch.name}',
+                  style: const TextStyle(fontWeight: FontWeight.w800),
+                ),
+                subtitle: Text(
+                  '${spot.branch.city} • ${spot.branch.address}\n${distance?.toStringAsFixed(1) ?? '--'} km away',
+                ),
+              );
+            }),
+          if (_showNearbyMap && _nearbyBanks.isEmpty)
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: scheme.errorContainer.withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                'No ${_selectedBank.shortCode} branches found within ${_nearbyRadiusKm.toInt()} km of your current location.',
+                style: TextStyle(
+                  color: scheme.onErrorContainer,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
           ...branches.map((branch) {
             final distance = _distanceKm(branch);
             return ListTile(
@@ -163,7 +317,57 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
     final pos = await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
-    setState(() => _userPosition = pos);
+    final allSelected = _allBranchesForSelectedBank(pos, _selectedBank);
+    final nearby = _filterNearby(allSelected, pos);
+    setState(() {
+      _userPosition = pos;
+      _allSelectedBankBranches = allSelected;
+      _nearbyBanks = nearby;
+      _showNearbyMap = true;
+    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _bankMapController.move(
+        LatLng(pos.latitude, pos.longitude),
+        13.4,
+      );
+    });
+  }
+
+  List<_NearbyBankSpot> _allBranchesForSelectedBank(Position pos, BankInfo selectedBank) {
+    final spots = <_NearbyBankSpot>[];
+    for (final branch in selectedBank.branches) {
+      spots.add(_NearbyBankSpot(bank: selectedBank, branch: branch));
+    }
+    spots.sort((a, b) {
+      final aDistance = Geolocator.distanceBetween(
+        pos.latitude,
+        pos.longitude,
+        a.branch.lat,
+        a.branch.lng,
+      );
+      final bDistance = Geolocator.distanceBetween(
+        pos.latitude,
+        pos.longitude,
+        b.branch.lat,
+        b.branch.lng,
+      );
+      return aDistance.compareTo(bDistance);
+    });
+    return spots;
+  }
+
+  List<_NearbyBankSpot> _filterNearby(List<_NearbyBankSpot> spots, Position pos) {
+    return spots.where((spot) {
+      final distanceKm = Geolocator.distanceBetween(
+            pos.latitude,
+            pos.longitude,
+            spot.branch.lat,
+            spot.branch.lng,
+          ) /
+          1000;
+      return distanceKm <= _nearbyRadiusKm;
+    }).toList(growable: false);
   }
 
   Widget _featureLaunchCard({
@@ -376,4 +580,14 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
     final value = text.replaceAll(RegExp(r'[^0-9]'), '');
     return int.tryParse(value) ?? 3;
   }
+}
+
+class _NearbyBankSpot {
+  const _NearbyBankSpot({
+    required this.bank,
+    required this.branch,
+  });
+
+  final BankInfo bank;
+  final BankBranch branch;
 }

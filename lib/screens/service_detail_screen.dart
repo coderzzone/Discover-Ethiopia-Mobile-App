@@ -1,8 +1,8 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/app_models.dart';
-import 'booking_demo_screen.dart';
 import '../widgets/ui_components.dart';
 
 class ServiceDetailScreen extends StatefulWidget {
@@ -35,9 +35,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
     super.dispose();
   }
 
+  String _resolveLocation(DirectoryService service) {
+    return service.location;
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final location = _resolveLocation(widget.service);
     final photos = widget.service.imagePaths.isNotEmpty
         ? widget.service.imagePaths
         : ['assets/images/addisababa.jpg']; // Fallback
@@ -129,6 +134,38 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                           }),
                         ),
                       ),
+                    Positioned(
+                      left: 16,
+                      bottom: photos.length > 1 ? 48 : 22,
+                      child: Container(
+                        constraints: const BoxConstraints(maxWidth: 260),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withValues(alpha: 0.45),
+                          borderRadius: BorderRadius.circular(999),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.location_on_rounded, size: 14, color: Colors.white),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                location,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -206,6 +243,49 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Location (full-width for mobile visibility)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: scheme.surfaceContainerLowest,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.location_on_rounded, size: 18, color: widget.service.brandColor),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Location',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                  color: scheme.onSurface.withValues(alpha: 0.72),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                location,
+                                style: TextStyle(
+                                  color: scheme.onSurface,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 28),
 
@@ -336,6 +416,26 @@ class _BottomActionArea extends StatelessWidget {
   const _BottomActionArea({required this.service});
   final DirectoryService service;
 
+  String _servicePhone(DirectoryService service) {
+    if (service is TourAgency) return service.contact;
+    return '+251911234567';
+  }
+
+  Future<void> _callNow(BuildContext context) async {
+    final raw = _servicePhone(service);
+    final digitsOnly = raw.replaceAll(RegExp(r'[^0-9+]'), '');
+    final uri = Uri.parse('tel:$digitsOnly');
+    final canCall = await canLaunchUrl(uri);
+    if (!canCall) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open phone dialer on this device.')),
+      );
+      return;
+    }
+    await launchUrl(uri);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -381,19 +481,13 @@ class _BottomActionArea extends StatelessWidget {
           ),
           const SizedBox(width: 16),
           FilledButton(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => BookingDemoScreen(service: service),
-                ),
-              );
-            },
+            onPressed: () => _callNow(context),
             style: FilledButton.styleFrom(
               backgroundColor: service.brandColor,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ),
-            child: const Text('Book Now', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
+            child: const Text('Book to Call', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 15)),
           ),
         ],
       ),

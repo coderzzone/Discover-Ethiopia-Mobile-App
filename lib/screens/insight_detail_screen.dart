@@ -177,11 +177,11 @@ class _InsightDetailScreenState extends State<InsightDetailScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(22),
                       decoration: BoxDecoration(
-                        color: EthioColors.surfaceContainerLowest,
+                        color: scheme.surfaceContainerLowest,
                         borderRadius: BorderRadius.circular(28),
                         boxShadow: [
                           BoxShadow(
-                            color: EthioColors.ink.withValues(alpha: 0.08),
+                            color: scheme.shadow.withValues(alpha: 0.08),
                             blurRadius: 24,
                             offset: const Offset(0, 10),
                           ),
@@ -215,7 +215,7 @@ class _InsightDetailScreenState extends State<InsightDetailScreen> {
                                     Text(
                                       insight.subtitle,
                                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                            color: EthioColors.mutedInk,
+                                            color: scheme.onSurfaceVariant,
                                           ),
                                     ),
                                   ],
@@ -224,13 +224,13 @@ class _InsightDetailScreenState extends State<InsightDetailScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          Divider(height: 1, color: EthioColors.ink.withValues(alpha: 0.08)),
+                          Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.6)),
                           const SizedBox(height: 16),
                           Text(
                             insight.description,
                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                   height: 1.6,
-                                  color: EthioColors.ink.withValues(alpha: 0.85),
+                                  color: scheme.onSurface.withValues(alpha: 0.88),
                                 ),
                           ),
                         ],
@@ -501,12 +501,13 @@ class _DetailSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.08)),
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -528,7 +529,7 @@ class _DetailSection extends StatelessWidget {
             content,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   height: 1.7,
-                  color: EthioColors.ink.withValues(alpha: 0.82),
+                  color: scheme.onSurface.withValues(alpha: 0.82),
                 ),
           ),
         ],
@@ -547,12 +548,13 @@ class _InfoPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.10)),
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -560,14 +562,14 @@ class _InfoPill extends StatelessWidget {
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, size: 14, color: EthioColors.primary),
+              Icon(icon, size: 14, color: scheme.primary),
               const SizedBox(width: 6),
               Text(
                 label.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
                   fontWeight: FontWeight.w800,
-                  color: EthioColors.mutedInk,
+                  color: scheme.onSurfaceVariant,
                   letterSpacing: 0.8,
                 ),
               ),
@@ -637,17 +639,18 @@ class _MiniFact extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: EthioColors.outline.withValues(alpha: 0.1)),
+        border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 15, color: EthioColors.primary),
+          Icon(icon, size: 15, color: scheme.primary),
           const SizedBox(width: 6),
           Text('$title: ', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
           Text(value, style: const TextStyle(fontSize: 12)),
@@ -663,6 +666,7 @@ class _InsightEssentials extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final rows = <_EssentialRowData>[
       _EssentialRowData('Climate', meta.climate, Icons.wb_sunny_rounded),
       _EssentialRowData('Season', meta.season, Icons.event_rounded),
@@ -677,12 +681,12 @@ class _InsightEssentials extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: EthioColors.surfaceContainerLowest,
+                color: scheme.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
                 children: [
-                  Icon(row.icon, size: 17, color: EthioColors.secondary),
+                  Icon(row.icon, size: 17, color: scheme.secondary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text('${row.title}: ${row.value}', style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
@@ -703,10 +707,11 @@ class _HighlightRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: EthioColors.surfaceContainerLowest,
+        color: scheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

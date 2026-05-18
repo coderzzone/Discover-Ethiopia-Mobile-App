@@ -45,6 +45,7 @@ abstract class DirectoryService {
   String get id;
   String get name;
   String get subtitle;
+  String get location;
   String get description;
   double get rating;
   List<String> get imagePaths;
@@ -61,6 +62,7 @@ class Hotel implements DirectoryService {
     required this.rating,
     required this.pricePerNight,
     required this.imageUrl,
+    required this.location,
     this.description = '',
     this.imagePaths = const [],
     this.highlights = const [],
@@ -75,6 +77,8 @@ class Hotel implements DirectoryService {
   final double rating;
   final String pricePerNight;
   final String imageUrl;
+  @override
+  final String location;
   
   @override
   final String description;
@@ -99,6 +103,7 @@ class CarRental implements DirectoryService {
     required this.pricePerDay,
     required this.imageUrl,
     required this.rating,
+    required this.location,
     this.description = '',
     this.imagePaths = const [],
     this.highlights = const [],
@@ -113,6 +118,8 @@ class CarRental implements DirectoryService {
   final String imageUrl;
   @override
   final double rating;
+  @override
+  final String location;
 
   @override
   final String description;
@@ -137,6 +144,7 @@ class TourAgency implements DirectoryService {
     required this.contact,
     required this.imageUrl,
     required this.rating,
+    required this.location,
     this.description = '',
     this.imagePaths = const [],
     this.highlights = const [],
@@ -151,6 +159,8 @@ class TourAgency implements DirectoryService {
   final String imageUrl;
   @override
   final double rating;
+  @override
+  final String location;
 
   @override
   final String description;
