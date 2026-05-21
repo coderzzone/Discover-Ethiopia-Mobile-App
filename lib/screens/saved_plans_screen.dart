@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../models/app_models.dart';
 import '../state/app_scope.dart';
@@ -119,29 +119,73 @@ class _SavedPlanCard extends StatelessWidget {
               'No checklist items parsed. You can still review full sections below.',
               style: TextStyle(color: scheme.onSurface.withValues(alpha: 0.6), fontSize: 12),
             )
-          else
-            ...plan.tasks.map(
-              (task) => CheckboxListTile(
-                value: task.completed,
-                controlAffinity: ListTileControlAffinity.leading,
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                onChanged: (_) => state.toggleSavedPlanTask(planId: plan.id, taskId: task.id),
-                title: AnimatedDefaultTextStyle(
-                  duration: const Duration(milliseconds: 220),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: task.completed
-                        ? scheme.onSurface.withValues(alpha: 0.45)
-                        : scheme.onSurface.withValues(alpha: 0.9),
-                    decoration: task.completed ? TextDecoration.lineThrough : TextDecoration.none,
-                    decorationThickness: 2.2,
-                  ),
-                  child: Text(task.label),
+          else ...[
+            if (progress == 1.0)
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.celebration_rounded, color: Colors.green, size: 18),
+                    const SizedBox(width: 8),
+                    const Text('Trip completed! Awesome job.', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
                 ),
               ),
-            ),
+            ...plan.tasks.map((task) {
+              final isDone = task.completed;
+              return GestureDetector(
+                onTap: () => state.toggleSavedPlanTask(planId: plan.id, taskId: task.id),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: isDone ? scheme.surfaceContainerHigh.withValues(alpha: 0.5) : scheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: isDone ? scheme.outline.withValues(alpha: 0.1) : scheme.outline.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 24,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: isDone ? scheme.primary : Colors.transparent,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: isDone ? scheme.primary : scheme.outline.withValues(alpha: 0.5),
+                            width: 2,
+                          ),
+                        ),
+                        child: isDone ? const Icon(Icons.check_rounded, size: 16, color: Colors.white) : null,
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 200),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: isDone ? FontWeight.w500 : FontWeight.w700,
+                            color: isDone ? scheme.onSurface.withValues(alpha: 0.4) : scheme.onSurface,
+                            decoration: isDone ? TextDecoration.lineThrough : TextDecoration.none,
+                          ),
+                          child: Text(task.label),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ],
           const SizedBox(height: 10),
           ExpansionTile(
             tilePadding: EdgeInsets.zero,

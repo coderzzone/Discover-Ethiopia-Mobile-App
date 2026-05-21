@@ -7,7 +7,10 @@ import 'package:latlong2/latlong.dart';
 
 import '../data/travel_features_data.dart';
 import '../models/travel_features_models.dart';
+import '../services/bank_locator_service.dart';
+import '../services/routing_service.dart';
 import 'amharic_phrasebook_screen.dart';
+import 'dart:async';
 
 class SmartTravelFeaturesScreen extends StatefulWidget {
   const SmartTravelFeaturesScreen({super.key});
@@ -24,17 +27,28 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
   String _region = 'Danakil';
   String _quizBudget = 'Medium';
   String _quizDifficulty = 'Medium';
-  BankInfo _selectedBank = ethiopianBanks.first;
+
+  // ── Bank locator (live OSM data) ─────────────────────────────────────────
   Position? _userPosition;
   String? _locationError;
-  List<_NearbyBankSpot> _nearbyBanks = const [];
-  List<_NearbyBankSpot> _allSelectedBankBranches = const [];
-  bool _showNearbyMap = false;
-  static const double _nearbyRadiusKm = 100;
+  bool _bankLoading = false;
+  int _searchRadiusMeters = 3000;
+  List<LiveBankBranch> _liveBranches = const [];
+  bool _showBankMap = false;
+
+  // ── Bank Routing ─────────────────────────────────────────────────────────
+  TravelMode _travelMode = TravelMode.walking;
+  List<LatLng> _activeRoute = const [];
+  LiveBankBranch? _selectedBranch;
+  StreamSubscription<Position>? _positionStream;
+  bool _isNavigating = false;
+  bool _isLoadingRoute = false;
+  String? _turnByTurnText;
 
   @override
   void dispose() {
     _quizDaysCtrl.dispose();
+    _positionStream?.cancel();
     super.dispose();
   }
 
@@ -77,297 +91,556 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
       );
 
   Widget _bankLocatorCard() {
-    final branches = _sortedBranches(_selectedBank.branches);
     final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          DropdownButtonFormField<BankInfo>(
-            initialValue: _selectedBank,
-            decoration: const InputDecoration(labelText: 'Choose bank'),
-            items: ethiopianBanks
-                .map((bank) => DropdownMenuItem<BankInfo>(value: bank, child: Text('${bank.shortCode} - ${bank.name}')))
-                .toList(),
-            onChanged: (value) {
-              if (value == null) return;
-              setState(() {
-                _selectedBank = value;
-                if (_userPosition != null) {
-                  _allSelectedBankBranches = _allBranchesForSelectedBank(_userPosition!, _selectedBank);
-                  _nearbyBanks = _filterNearby(_allSelectedBankBranches, _userPosition!);
-                  _showNearbyMap = true;
-                }
-              });
-            },
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // ── Radius selector ────────────────────────────────────────────────
+        Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text('Search radius:',
+                style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: scheme.onSurface.withValues(alpha: 0.7))),
+            ...{1000: '1 km', 3000: '3 km', 5000: '5 km', 10000: '10 km'}
+                .entries
+                .map((e) => ChoiceChip(
+                      label: Text(e.value),
+                      selected: _searchRadiusMeters == e.key,
+                      onSelected: (_) =>
+                          setState(() => _searchRadiusMeters = e.key),
+                    )),
+          ],
+        ),
+        const SizedBox(height: 12),
+
+        // ── Scan button ────────────────────────────────────────────────────
+        FilledButton.icon(
+          onPressed: _bankLoading ? null : _detectLocation,
+          icon: _bankLoading
+              ? const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                      strokeWidth: 2, color: Colors.white))
+              : const Icon(Icons.my_location_rounded, size: 18),
+          label: Text(
+              _bankLoading ? 'Searching...' : 'Find Real Nearby Banks'),
+          style: FilledButton.styleFrom(
+            minimumSize: const Size(double.infinity, 48),
           ),
-          const SizedBox(height: 10),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
+        ),
+        // GPS coordinate pill — below the button to avoid overflow
+        if (_userPosition != null && !_bankLoading) ...[
+          const SizedBox(height: 8),
+          Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              FilledButton.icon(
-                onPressed: _detectLocation,
-                icon: const Icon(Icons.my_location_rounded, size: 18),
-                label: const Text('Scan My Location'),
+              Icon(Icons.gps_fixed_rounded,
+                  size: 13, color: scheme.primary),
+              const SizedBox(width: 4),
+              Text(
+                '${_userPosition!.latitude.toStringAsFixed(4)}, '
+                '${_userPosition!.longitude.toStringAsFixed(4)}',
+                style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: scheme.primary),
               ),
-              if (_userPosition != null)
-                Chip(
-                  label: Text(
-                    'Lat ${_userPosition!.latitude.toStringAsFixed(3)}, Lng ${_userPosition!.longitude.toStringAsFixed(3)}',
-                  ),
-                ),
             ],
           ),
-          if (_locationError != null) ...[
-            const SizedBox(height: 8),
-            Text(_locationError!, style: TextStyle(color: scheme.error, fontWeight: FontWeight.w600)),
-          ],
-          if (_showNearbyMap && _userPosition != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              'Nearby Banks on Map',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                color: scheme.primary,
-              ),
+        ],
+
+        // ── Error ──────────────────────────────────────────────────────────
+        if (_locationError != null) ...[
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: scheme.errorContainer.withValues(alpha: 0.35),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(height: 8),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: SizedBox(
-                height: 280,
-                child: FlutterMap(
-                  mapController: _bankMapController,
-                  options: MapOptions(
-                    initialCenter: LatLng(
-                      _userPosition!.latitude,
-                      _userPosition!.longitude,
-                    ),
-                    initialZoom: 13.4,
-                    minZoom: 4.0,
-                    maxZoom: 18.0,
+            child: Row(
+              children: [
+                Icon(Icons.warning_amber_rounded,
+                    size: 18, color: scheme.error),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(_locationError!,
+                      style: TextStyle(
+                          color: scheme.error, fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        // ── Live map ───────────────────────────────────────────────────────
+        if (_showBankMap && _userPosition != null) ...[
+          const SizedBox(height: 16),
+          // Route Mode Selector
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SegmentedButton<TravelMode>(
+              segments: const [
+                ButtonSegment(value: TravelMode.walking, icon: Icon(Icons.directions_walk_rounded), label: Text('Walk')),
+                ButtonSegment(value: TravelMode.cycling, icon: Icon(Icons.directions_bike_rounded), label: Text('Bike')),
+                ButtonSegment(value: TravelMode.bus, icon: Icon(Icons.directions_bus_rounded), label: Text('Bus')),
+                ButtonSegment(value: TravelMode.driving, icon: Icon(Icons.directions_car_rounded), label: Text('Car')),
+              ],
+              selected: {_travelMode},
+              onSelectionChanged: (value) {
+                setState(() => _travelMode = value.first);
+                if (_selectedBranch != null) {
+                  _calculateRouteToBranch(_selectedBranch!);
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: SizedBox(
+              height: 300,
+              child: FlutterMap(
+                mapController: _bankMapController,
+                options: MapOptions(
+                  initialCenter: LatLng(
+                      _userPosition!.latitude, _userPosition!.longitude),
+                  initialZoom: _zoomForRadius(_searchRadiusMeters),
+                  minZoom: 4.0,
+                  maxZoom: 18.0,
+                ),
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.ethio_explore',
                   ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.example.ethio_explore',
-                    ),
-                    MarkerLayer(
-                      markers: [
-                        Marker(
-                          point: LatLng(
-                            _userPosition!.latitude,
-                            _userPosition!.longitude,
-                          ),
-                          width: 54,
-                          height: 54,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: scheme.primary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2.5,
-                              ),
-                            ),
-                            child: const Icon(
-                              Icons.my_location_rounded,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        ..._allSelectedBankBranches.map(
-                          (spot) => Marker(
-                            point: LatLng(spot.branch.lat, spot.branch.lng),
-                            width: 44,
-                            height: 44,
-                            child: Tooltip(
-                              message:
-                                  '${spot.bank.shortCode} - ${spot.branch.name}\n${spot.branch.address}',
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: scheme.secondary,
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 1.8,
-                                  ),
-                                ),
-                                child: const Icon(
-                                  Icons.account_balance_rounded,
-                                  color: Colors.white,
-                                  size: 20,
-                                ),
-                              ),
-                            ),
-                          ),
+                  if (_activeRoute.isNotEmpty)
+                    PolylineLayer(
+                      polylines: [
+                        Polyline(
+                          points: _activeRoute,
+                          strokeWidth: 4,
+                          color: scheme.primary,
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  MarkerLayer(
+                    markers: [
+                      // You are here
+                      Marker(
+                        point: LatLng(_userPosition!.latitude,
+                            _userPosition!.longitude),
+                        width: 56,
+                        height: 56,
+                        child: Container(
+                          margin: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: scheme.primary,
+                            shape: BoxShape.circle,
+                            border:
+                                Border.all(color: Colors.white, width: 3),
+                            boxShadow: [
+                              BoxShadow(
+                                  color:
+                                      scheme.primary.withValues(alpha: 0.45),
+                                  blurRadius: 14,
+                                  spreadRadius: 3),
+                            ],
+                          ),
+                          child: const Icon(
+                              Icons.person_pin_circle_rounded,
+                              color: Colors.white,
+                              size: 22),
+                        ),
+                      ),
+                      // Real branch markers from OSM
+                      ..._liveBranches.map(
+                        (b) {
+                          final isSelected = _selectedBranch?.lat == b.lat && _selectedBranch?.lng == b.lng;
+                          return Marker(
+                            point: LatLng(b.lat, b.lng),
+                            width: isSelected ? 60 : 48,
+                            height: isSelected ? 60 : 48,
+                            child: GestureDetector(
+                              onTap: () => _calculateRouteToBranch(b),
+                              child: Tooltip(
+                                message: '${b.name}\n${b.displayAddress}',
+                                preferBelow: false,
+                                child: Container(
+                                  margin: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: isSelected ? scheme.error : scheme.secondary,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: Colors.white, width: isSelected ? 3 : 2),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: (isSelected ? scheme.error : scheme.secondary)
+                                              .withValues(alpha: 0.4),
+                                          blurRadius: 8,
+                                          spreadRadius: 1),
+                                    ],
+                                  ),
+                                  child: const Icon(
+                                      Icons.account_balance_rounded,
+                                      color: Colors.white,
+                                      size: 20),
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 8),
-            Text(
-              '${_allSelectedBankBranches.length} ${_selectedBank.shortCode} branches mapped',
-              style: TextStyle(
-                color: scheme.onSurface.withValues(alpha: 0.7),
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-          const SizedBox(height: 10),
-          Text(
-            '${_selectedBank.name} branches',
-            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
-          const SizedBox(height: 8),
-          if (_showNearbyMap && _nearbyBanks.isNotEmpty)
-            ..._nearbyBanks.take(8).map((spot) {
-              final distance = _distanceKm(spot.branch);
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(
-                  Icons.place_rounded,
-                  color: scheme.secondary,
-                ),
-                title: Text(
-                  '${spot.bank.shortCode} - ${spot.branch.name}',
-                  style: const TextStyle(fontWeight: FontWeight.w800),
-                ),
-                subtitle: Text(
-                  '${spot.branch.city} • ${spot.branch.address}\n${distance?.toStringAsFixed(1) ?? '--'} km away',
-                ),
-              );
-            }),
-          if (_showNearbyMap && _nearbyBanks.isEmpty)
+          const SizedBox(height: 10),
+          Row(
+            children: [
+              _mapLegendDot(scheme.primary),
+              const SizedBox(width: 5),
+              const Text('You', style: TextStyle(fontSize: 12)),
+              const SizedBox(width: 12),
+              _mapLegendDot(scheme.secondary),
+              const SizedBox(width: 5),
+              Text('Banks found: ${_liveBranches.length}',
+                  style: const TextStyle(fontSize: 12)),
+            ],
+          ),
+          if (_isLoadingRoute)
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_turnByTurnText != null)
             Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 10),
+              margin: const EdgeInsets.only(top: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: scheme.errorContainer.withValues(alpha: 0.35),
+                color: scheme.primaryContainer,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                'No ${_selectedBank.shortCode} branches found within ${_nearbyRadiusKm.toInt()} km of your current location.',
-                style: TextStyle(
-                  color: scheme.onErrorContainer,
-                  fontWeight: FontWeight.w700,
-                ),
+              child: Row(
+                children: [
+                  Icon(Icons.directions, color: scheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(_turnByTurnText!, style: TextStyle(color: scheme.onPrimaryContainer, fontWeight: FontWeight.w600))),
+                ],
               ),
             ),
-          ...branches.map((branch) {
-            final distance = _distanceKm(branch);
-            return ListTile(
-              contentPadding: EdgeInsets.zero,
-              leading: Icon(Icons.account_balance_rounded, color: scheme.primary),
-              title: Text(branch.name, style: const TextStyle(fontWeight: FontWeight.w700)),
-              subtitle: Text('${branch.city} • ${branch.address}${distance == null ? '' : '\n${distance.toStringAsFixed(1)} km away'}'),
+        ],
+
+        // ── Live branch cards ──────────────────────────────────────────────
+        if (_liveBranches.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Icon(Icons.account_balance_rounded,
+                  size: 18, color: scheme.primary),
+              const SizedBox(width: 8),
+              Text(
+                'Nearby banks — sorted by distance',
+                style: const TextStyle(
+                    fontWeight: FontWeight.w800, fontSize: 15),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ..._liveBranches.asMap().entries.map((entry) {
+            final i = entry.key;
+            final branch = entry.value;
+            final isNearest = i == 0;
+            final dist = Geolocator.distanceBetween(
+                  _userPosition!.latitude,
+                  _userPosition!.longitude,
+                  branch.lat,
+                  branch.lng,
+                ) /
+                1000;
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: isNearest
+                    ? scheme.primaryContainer.withValues(alpha: 0.25)
+                    : scheme.surfaceContainerLowest,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: isNearest
+                      ? scheme.primary.withValues(alpha: 0.35)
+                      : scheme.outline.withValues(alpha: 0.12),
+                  width: isNearest ? 1.5 : 1,
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: (isNearest
+                              ? scheme.primary
+                              : scheme.secondary)
+                          .withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(Icons.account_balance_rounded,
+                        color: isNearest
+                            ? scheme.primary
+                            : scheme.secondary,
+                        size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(branch.name,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 14)),
+                            ),
+                            if (isNearest)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: scheme.primary,
+                                  borderRadius: BorderRadius.circular(99),
+                                ),
+                                child: const Text('NEAREST',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 9,
+                                        fontWeight: FontWeight.w900,
+                                        letterSpacing: 0.8)),
+                              ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(branch.displayAddress,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: scheme.onSurface
+                                    .withValues(alpha: 0.65))),
+                        if (branch.openingHours != null) ...[
+                          const SizedBox(height: 3),
+                          Row(children: [
+                            Icon(Icons.access_time_rounded,
+                                size: 12,
+                                color: scheme.tertiary),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(branch.openingHours!,
+                                  style: TextStyle(
+                                      fontSize: 11,
+                                      color: scheme.tertiary,
+                                      fontWeight: FontWeight.w600)),
+                            ),
+                          ]),
+                        ],
+                        const SizedBox(height: 6),
+                        Row(children: [
+                          Icon(Icons.directions_walk_rounded,
+                              size: 13, color: scheme.tertiary),
+                          const SizedBox(width: 4),
+                          Text('${dist.toStringAsFixed(2)} km away',
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: scheme.tertiary)),
+                        ]),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             );
           }),
         ],
-      ),
+
+        // ── Empty state ────────────────────────────────────────────────────
+        if (!_bankLoading &&
+            _userPosition != null &&
+            _liveBranches.isEmpty &&
+            _showBankMap) ...[
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: scheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                  color: scheme.outline.withValues(alpha: 0.15)),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.search_off_rounded,
+                    size: 36,
+                    color: scheme.onSurface.withValues(alpha: 0.3)),
+                const SizedBox(height: 8),
+                Text(
+                  'No banks found within ${_searchRadiusMeters ~/ 1000} km.\nTry increasing the search radius.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: scheme.onSurface.withValues(alpha: 0.55)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
     );
   }
 
-  List<BankBranch> _sortedBranches(List<BankBranch> branches) {
-    final list = [...branches];
-    if (_userPosition == null) return list;
-    list.sort((a, b) => _distanceKm(a)!.compareTo(_distanceKm(b)!));
-    return list;
+  Widget _mapLegendDot(Color color) => Container(
+        width: 12,
+        height: 12,
+        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+      );
+
+  double _zoomForRadius(int radiusMeters) {
+    if (radiusMeters <= 1000) return 15.0;
+    if (radiusMeters <= 3000) return 14.0;
+    if (radiusMeters <= 5000) return 13.0;
+    return 12.0;
   }
 
-  double? _distanceKm(BankBranch branch) {
-    if (_userPosition == null) return null;
-    final distanceMeters = Geolocator.distanceBetween(
-      _userPosition!.latitude,
-      _userPosition!.longitude,
-      branch.lat,
-      branch.lng,
-    );
-    return distanceMeters / 1000;
+  Future<void> _calculateRouteToBranch(LiveBankBranch branch) async {
+    if (_userPosition == null) return;
+    setState(() {
+      _selectedBranch = branch;
+      _isLoadingRoute = true;
+      _activeRoute = [];
+      _turnByTurnText = 'Calculating route...';
+    });
+    
+    try {
+      final route = await RoutingService.fetchRoute(
+        start: LatLng(_userPosition!.latitude, _userPosition!.longitude),
+        end: LatLng(branch.lat, branch.lng),
+        mode: _travelMode,
+      );
+      
+      if (!mounted) return;
+      
+      setState(() {
+        _activeRoute = route.polyline;
+        _isLoadingRoute = false;
+        
+        final stepsText = route.steps.take(2).join(' then ');
+        _turnByTurnText = '${route.distanceKm.toStringAsFixed(1)} km (${route.durationMins} min) — $stepsText';
+      });
+      
+      if (_activeRoute.isNotEmpty) {
+        final bounds = LatLngBounds.fromPoints(_activeRoute);
+        _bankMapController.fitCamera(
+          CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(30)),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingRoute = false;
+        _turnByTurnText = 'Failed to calculate route: $e';
+      });
+    }
   }
 
   Future<void> _detectLocation() async {
-    setState(() => _locationError = null);
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      setState(() => _locationError = 'Location service is disabled on this device.');
-      return;
-    }
-    var permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-    if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-      setState(() => _locationError = 'Location permission denied. Please enable it in settings.');
-      return;
-    }
-    final pos = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-    );
-    final allSelected = _allBranchesForSelectedBank(pos, _selectedBank);
-    final nearby = _filterNearby(allSelected, pos);
     setState(() {
-      _userPosition = pos;
-      _allSelectedBankBranches = allSelected;
-      _nearbyBanks = nearby;
-      _showNearbyMap = true;
+      _locationError = null;
+      _bankLoading = true;
     });
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      _bankMapController.move(
-        LatLng(pos.latitude, pos.longitude),
-        13.4,
-      );
-    });
-  }
 
-  List<_NearbyBankSpot> _allBranchesForSelectedBank(Position pos, BankInfo selectedBank) {
-    final spots = <_NearbyBankSpot>[];
-    for (final branch in selectedBank.branches) {
-      spots.add(_NearbyBankSpot(bank: selectedBank, branch: branch));
+    try {
+      // 1 — check location service
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        setState(() => _locationError =
+            'Location service is disabled. Please turn it on.');
+        return;
+      }
+
+      // 2 — check / request permission
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        setState(() => _locationError =
+            'Location permission denied. Enable it in Settings.');
+        return;
+      }
+
+      // 3 — get GPS position
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high),
+      );
+
+      // 4 — fetch REAL banks from Overpass API (OpenStreetMap)
+      final branches = await BankLocatorService.fetchNearby(
+        lat: pos.latitude,
+        lng: pos.longitude,
+        radiusMeters: _searchRadiusMeters,
+      );
+
+      // Sort by distance
+      branches.sort((a, b) {
+        final da = Geolocator.distanceBetween(
+            pos.latitude, pos.longitude, a.lat, a.lng);
+        final db = Geolocator.distanceBetween(
+            pos.latitude, pos.longitude, b.lat, b.lng);
+        return da.compareTo(db);
+      });
+
+      setState(() {
+        _userPosition = pos;
+        _liveBranches = branches;
+        _showBankMap = true;
+      });
+
+      // Start live sensor tracking
+      _positionStream?.cancel();
+      _positionStream = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 10),
+      ).listen((Position position) {
+        if (mounted) {
+          setState(() => _userPosition = position);
+        }
+      });
+
+      // 5 — animate map to user position
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _bankMapController.move(
+          LatLng(pos.latitude, pos.longitude),
+          _zoomForRadius(_searchRadiusMeters),
+        );
+      });
+    } catch (e) {
+      setState(() =>
+          _locationError = 'Failed to fetch bank data: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _bankLoading = false);
     }
-    spots.sort((a, b) {
-      final aDistance = Geolocator.distanceBetween(
-        pos.latitude,
-        pos.longitude,
-        a.branch.lat,
-        a.branch.lng,
-      );
-      final bDistance = Geolocator.distanceBetween(
-        pos.latitude,
-        pos.longitude,
-        b.branch.lat,
-        b.branch.lng,
-      );
-      return aDistance.compareTo(bDistance);
-    });
-    return spots;
-  }
-
-  List<_NearbyBankSpot> _filterNearby(List<_NearbyBankSpot> spots, Position pos) {
-    return spots.where((spot) {
-      final distanceKm = Geolocator.distanceBetween(
-            pos.latitude,
-            pos.longitude,
-            spot.branch.lat,
-            spot.branch.lng,
-          ) /
-          1000;
-      return distanceKm <= _nearbyRadiusKm;
-    }).toList(growable: false);
   }
 
   Widget _featureLaunchCard({
@@ -580,14 +853,4 @@ class _SmartTravelFeaturesScreenState extends State<SmartTravelFeaturesScreen> {
     final value = text.replaceAll(RegExp(r'[^0-9]'), '');
     return int.tryParse(value) ?? 3;
   }
-}
-
-class _NearbyBankSpot {
-  const _NearbyBankSpot({
-    required this.bank,
-    required this.branch,
-  });
-
-  final BankInfo bank;
-  final BankBranch branch;
 }

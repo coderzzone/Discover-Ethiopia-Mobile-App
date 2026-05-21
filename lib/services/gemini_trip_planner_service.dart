@@ -34,31 +34,38 @@ class GeminiTripPlannerService {
     );
 
     final prompt = '''
-You are an expert, highly enthusiastic Ethiopia travel planner and local guide. Your goal is to craft an incredibly personalized, rich, and detailed itinerary that strictly follows the user's specific inputs and custom questions. Do not give generic advice—tailor everything!
+You are a concise Ethiopia travel planner. Generate a SHORT, structured trip plan.
 
-TRIP PROFILE:
-- Duration: $durationDays days
-- Budget Limit: $budgetEtb ETB (strictly adhere to this budget)
-- Core Interests: $interests
-- Travel Style: $travelerStyle
-- Season of Travel: $season
-- CUSTOM REQUESTS / QUESTIONS: ${customQuestions.isEmpty ? 'None provided' : customQuestions}
+TRIP:
+- Days: $durationDays | Budget: $budgetEtb ETB | Style: $travelerStyle
+- Interests: $interests | Season: $season
+${customQuestions.isNotEmpty ? '- Special requests: $customQuestions' : ''}
 
-CRITICAL RULES:
-1. CUSTOM REQUESTS FIRST: You MUST explicitly address the user's "CUSTOM REQUESTS" throughout the plan. If they travel with kids, mention kid-friendly spots. If they want coffee, add coffee stops.
-2. REALITY CHECK: Factor in Ethiopia's actual road conditions, realistic driving times between cities, and altitude acclimatization (e.g., Addis Ababa is at 2355m).
-3. SEASONAL ACCURACY: 
-   - Danakil Depression is dangerously hot and mostly closed from June to September.
-   - Omo Valley roads can be impassable in the rainy season (July-August) but great otherwise.
-4. EXACT OUTPUT FORMAT: You must organize your response using EXACTLY these headings (do not use markdown headers (#)(*)(**), just the exact text followed by a newline):
-Route Summary
-Day-by-Day Plan
-Budget Breakdown
-Packing Priorities
-Risk & Safety Notes
-Why This Plan Fits
+OUTPUT RULES (STRICT):
+- Use EXACTLY these 4 section headers on their own line:
+  Day-by-Day Tasks
+  Budget Breakdown
+  Packing Essentials
+  Safety Tips
 
-Make the tone exciting, practical, and highly specific to Ethiopia. Let's build the perfect trip!
+- Under "Day-by-Day Tasks": one bullet per activity using EXACTLY this format:
+  • Day 1: Visit National Museum (2h, free entry)
+  • Day 1: Lunch at Kategna restaurant (150 ETB)
+  • Day 2: Drive to Lalibela (45 min flight, 3200 ETB)
+  Keep each bullet SHORT — max 12 words. No paragraphs.
+
+- Under "Budget Breakdown": 3-5 bullet lines only, e.g.:
+  • Transport: 8,000 ETB
+  • Accommodation: 4,500 ETB
+  • Food: 2,000 ETB
+
+- Under "Packing Essentials": 4-6 bullet items only, e.g.:
+  • Sunscreen SPF 50+ (Danakil)
+  • Warm layers for highlands
+
+- Under "Safety Tips": 3-4 bullet lines only.
+
+Be specific to Ethiopia. No markdown. No extra text outside the sections.
 ''';
 
     final body = jsonEncode({
@@ -70,8 +77,8 @@ Make the tone exciting, practical, and highly specific to Ethiopia. Let's build 
         },
       ],
       'generationConfig': {
-        'temperature': 0.85,
-        'maxOutputTokens': 8001,
+        'temperature': 0.7,
+        'maxOutputTokens': 1800,
       },
     });
 

@@ -17,7 +17,7 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
   String _customQuestions = '';
 
   double _days = 5;
-  double _budget = 15000;
+  double _budget = 5000;
   String _interests = 'History & Culture';
   String _travelStyle = 'Balanced comfort';
   String _season = 'Dry Season';
@@ -116,12 +116,10 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
 
   List<AiPlanSection> _parseSections(String text) {
     final titles = [
-      'Route Summary',
-      'Day-by-Day Plan',
+      'Day-by-Day Tasks',
       'Budget Breakdown',
-      'Packing Priorities',
-      'Risk & Safety Notes',
-      'Why This Plan Fits',
+      'Packing Essentials',
+      'Safety Tips',
     ];
 
     final lines = text.split('\n');
@@ -130,9 +128,12 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
     final buffer = StringBuffer();
 
     for (final rawLine in lines) {
-      final line = rawLine.trim();
+      final line = rawLine.trim().toLowerCase();
+      // Remove common markdown formatting characters from start
+      final cleanLine = line.replaceAll(RegExp(r'^[\#\*\-\s]+'), '').replaceAll(RegExp(r'[\*\#]+$'), '').trim();
+
       final matched = titles.firstWhere(
-        (t) => line.toLowerCase().startsWith(t.toLowerCase()),
+        (t) => cleanLine.startsWith(t.toLowerCase()),
         orElse: () => '',
       );
 
@@ -529,9 +530,9 @@ class _AiTripPlannerScreenState extends State<AiTripPlannerScreen> with TickerPr
   IconData _getIconForSection(String title) {
     final lower = title.toLowerCase();
     if (lower.contains('route')) return Icons.map_rounded;
-    if (lower.contains('day')) return Icons.calendar_month_rounded;
+    if (lower.contains('day') || lower.contains('task')) return Icons.calendar_month_rounded;
     if (lower.contains('budget')) return Icons.account_balance_wallet_rounded;
-    if (lower.contains('packing')) return Icons.backpack_rounded;
+    if (lower.contains('packing') || lower.contains('essential')) return Icons.backpack_rounded;
     if (lower.contains('risk') || lower.contains('safety')) return Icons.health_and_safety_rounded;
     return Icons.auto_awesome_rounded;
   }

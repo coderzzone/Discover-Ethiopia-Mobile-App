@@ -311,10 +311,10 @@ class AppState extends ChangeNotifier {
         final line = raw.trim();
         if (line.isEmpty) continue;
         if (line.length < 6) continue;
-        if (!(line.startsWith('-') || line.startsWith('*') || RegExp(r'^\d+[\).\s]').hasMatch(line))) {
+        if (!(line.startsWith('-') || line.startsWith('*') || line.startsWith('•') || line.startsWith('·') || RegExp(r'^\d+[\).\s]').hasMatch(line))) {
           continue;
         }
-        final normalized = line.replaceFirst(RegExp(r'^[-*\d\).\s]+'), '').trim();
+        final normalized = line.replaceFirst(RegExp(r'^[-*•·\d\).\s]+'), '').trim();
         if (normalized.isEmpty) continue;
         tasks.add(SavedPlanTask(
           id: '${DateTime.now().microsecondsSinceEpoch}_${tasks.length}',

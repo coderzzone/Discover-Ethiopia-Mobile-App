@@ -83,47 +83,34 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: scheme.surfaceContainerLowest,
-                      boxShadow: [
-                        BoxShadow(
-                          color: scheme.primary.withValues(alpha: 0.15),
-                          blurRadius: 40,
-                          offset: const Offset(0, 15),
-                        ),
-                      ],
-                    ),
-                    child: ClipOval(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Image.asset('Logo.png', fit: BoxFit.contain),
-                      ),
-                    ),
+                  Icon(
+                    Icons.explore_rounded,
+                    size: 80,
+                    color: scheme.primary.withValues(alpha: 0.9),
                   ),
-                  const SizedBox(height: 36),
+                  const SizedBox(height: 24),
                   Text(
-                    'Discover Ethiopia',
+                    'Welcome to Ethiopia',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: scheme.primary,
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
+                      fontSize: 32,
+                      fontWeight: FontWeight.w900,
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'EXPLORE OFFLINE',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: scheme.onSurface.withValues(alpha: 0.5),
-                      fontSize: 14,
-                      letterSpacing: 3.0,
-                      fontWeight: FontWeight.w700,
+                  const SizedBox(height: 12),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: Text(
+                      'Your smart offline companion for discovering the Land of Origins.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: scheme.onSurface.withValues(alpha: 0.7),
+                        fontSize: 16,
+                        height: 1.4,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ],
@@ -159,4 +146,3 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
     );
   }
 }
-

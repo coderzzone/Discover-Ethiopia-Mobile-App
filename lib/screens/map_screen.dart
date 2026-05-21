@@ -11,14 +11,16 @@ import '../state/app_scope.dart';
 import '../state/app_state.dart';
 import '../widgets/ui_components.dart';
 
+import '../services/routing_service.dart';
+import 'package:geolocator/geolocator.dart';
+import 'dart:async';
+
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
   @override
   State<MapScreen> createState() => _MapScreenState();
 }
-
-enum RouteMode { walking, driving, hiking }
 
 class _MapScreenState extends State<MapScreen> {
   final MapController _mapController = MapController();
@@ -29,10 +31,13 @@ class _MapScreenState extends State<MapScreen> {
   bool _showSatellite = false;
   bool _showLegend = false;
   String _activeFilter = 'All';
-  RouteMode _routeMode = RouteMode.walking;
+  TravelMode _routeMode = TravelMode.driving;
   LatLng _currentLocation = _center;
   List<LatLng> _activeRoute = const [];
   List<String> _turnByTurnSteps = const [];
+  bool _isTracking = false;
+  StreamSubscription<Position>? _positionStream;
+  bool _isLoadingRoute = false;
 
   static const _center = LatLng(9.145, 40.489);
   static const _filters = [
@@ -113,6 +118,7 @@ class _MapScreenState extends State<MapScreen> {
   void dispose() {
     _searchCtrl.dispose();
     _mapController.dispose();
+    _positionStream?.cancel();
     super.dispose();
   }
 
@@ -205,70 +211,103 @@ class _MapScreenState extends State<MapScreen> {
     _mapController.move(LatLng(avgLat, avgLng), 6.2);
   }
 
-  void _startNavigationTo(LatLng target, String title) {
-    final route = _buildRoute(_currentLocation, target, _routeMode);
-    final steps = _buildTurnByTurn(route, title);
-
+  Future<void> _startNavigationTo(LatLng target, String title) async {
     setState(() {
-      _activeRoute = route;
-      _turnByTurnSteps = steps;
+      _isLoadingRoute = true;
+      _activeRoute = [];
+      _turnByTurnSteps = ['Calculating route...'];
       _selectedPoi = null;
     });
 
-    _mapController.move(target, 8.0);
+    try {
+      final route = await RoutingService.fetchRoute(
+        start: _currentLocation,
+        end: target,
+        mode: _routeMode,
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _activeRoute = route.polyline;
+        _turnByTurnSteps = route.steps;
+        _isLoadingRoute = false;
+      });
+
+      // Fit bounds to show the whole route
+      if (_activeRoute.isNotEmpty) {
+        final bounds = LatLngBounds.fromPoints(_activeRoute);
+        _mapController.fitCamera(
+          CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(40)),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isLoadingRoute = false;
+        _turnByTurnSteps = ['Error calculating route: $e'];
+      });
+    }
   }
 
-  List<LatLng> _buildRoute(LatLng start, LatLng end, RouteMode mode) {
-    final latMid = (start.latitude + end.latitude) / 2;
-    final lngMid = (start.longitude + end.longitude) / 2;
-
-    final bend = switch (mode) {
-      RouteMode.walking => 0.08,
-      RouteMode.driving => 0.04,
-      RouteMode.hiking => 0.13,
-    };
-
-    final waypoint1 = LatLng(
-      latMid + bend * math.sin(end.longitude),
-      lngMid - bend * math.cos(end.latitude),
-    );
-    final waypoint2 = LatLng(
-      latMid - bend * 0.5 * math.cos(end.longitude),
-      lngMid + bend * 0.5 * math.sin(end.latitude),
-    );
-
-    return [start, waypoint1, waypoint2, end];
-  }
-
-  List<String> _buildTurnByTurn(List<LatLng> route, String targetTitle) {
-    if (route.length < 2) return const [];
-
-    final speedKmh = switch (_routeMode) {
-      RouteMode.walking => 4.8,
-      RouteMode.driving => 42.0,
-      RouteMode.hiking => 3.6,
-    };
-
-    final modeLabel = switch (_routeMode) {
-      RouteMode.walking => 'Walk',
-      RouteMode.driving => 'Drive',
-      RouteMode.hiking => 'Hike',
-    };
-
-    final steps = <String>['$modeLabel to $targetTitle'];
-
-    for (var i = 0; i < route.length - 1; i++) {
-      final from = route[i];
-      final to = route[i + 1];
-      final km = _distance.as(LengthUnit.Kilometer, from, to);
-      final mins = ((km / speedKmh) * 60).ceil();
-      final instruction = i == route.length - 2
-          ? 'Continue for ${km.toStringAsFixed(1)} km ($mins min), destination ahead.'
-          : 'Continue for ${km.toStringAsFixed(1)} km ($mins min), then slight turn.';
-      steps.add(instruction);
+  Future<void> _toggleTracking() async {
+    if (_isTracking) {
+      setState(() => _isTracking = false);
+      _positionStream?.cancel();
+      _positionStream = null;
+      return;
     }
 
-    return steps;
+    // Request permissions
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Location permissions are denied')),
+          );
+        }
+        return;
+      }
+    }
+    
+    if (permission == LocationPermission.deniedForever) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Location permissions are permanently denied, we cannot request permissions.')),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isTracking = true);
+    
+    // Get initial
+    try {
+      final pos = await Geolocator.getCurrentPosition(locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
+      _updateLocationFromPosition(pos);
+    } catch (_) {}
+
+    // Stream
+    _positionStream = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 10),
+    ).listen((Position? position) {
+      if (position != null && mounted) {
+        _updateLocationFromPosition(position);
+      }
+    });
+  }
+
+  void _updateLocationFromPosition(Position pos) {
+    setState(() {
+      _currentLocation = LatLng(pos.latitude, pos.longitude);
+    });
+    if (_isTracking) {
+      _mapController.move(
+        _currentLocation,
+        _mapController.camera.zoom < 14 ? 14 : _mapController.camera.zoom,
+      );
+    }
   }
 
   @override
@@ -334,9 +373,10 @@ class _MapScreenState extends State<MapScreen> {
                       points: _activeRoute,
                       strokeWidth: 5,
                       color: switch (_routeMode) {
-                        RouteMode.walking => EthioColors.secondary,
-                        RouteMode.driving => EthioColors.primary,
-                        RouteMode.hiking => EthioColors.tertiary,
+                        TravelMode.walking => EthioColors.secondary,
+                        TravelMode.cycling => EthioColors.tertiary,
+                        TravelMode.bus => EthioColors.primary,
+                        TravelMode.driving => EthioColors.primary,
                       },
                     ),
                   ],
@@ -553,27 +593,41 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: SegmentedButton<RouteMode>(
-                          segments: const [
-                            ButtonSegment(
-                              value: RouteMode.walking,
-                              icon: Icon(Icons.directions_walk_rounded),
-                              label: Text('Walk'),
-                            ),
-                            ButtonSegment(
-                              value: RouteMode.driving,
-                              icon: Icon(Icons.directions_car_rounded),
-                              label: Text('Drive'),
-                            ),
-                            ButtonSegment(
-                              value: RouteMode.hiking,
-                              icon: Icon(Icons.terrain_rounded),
-                              label: Text('Hike'),
-                            ),
-                          ],
-                          selected: {_routeMode},
-                          onSelectionChanged: (value) =>
-                              setState(() => _routeMode = value.first),
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SegmentedButton<TravelMode>(
+                            segments: const [
+                              ButtonSegment(
+                                value: TravelMode.walking,
+                                icon: Icon(Icons.directions_walk_rounded),
+                                label: Text('Walk'),
+                              ),
+                              ButtonSegment(
+                                value: TravelMode.cycling,
+                                icon: Icon(Icons.directions_bike_rounded),
+                                label: Text('Bike'),
+                              ),
+                              ButtonSegment(
+                                value: TravelMode.bus,
+                                icon: Icon(Icons.directions_bus_rounded),
+                                label: Text('Bus'),
+                              ),
+                              ButtonSegment(
+                                value: TravelMode.driving,
+                                icon: Icon(Icons.directions_car_rounded),
+                                label: Text('Car'),
+                              ),
+                            ],
+                            selected: {_routeMode},
+                            onSelectionChanged: (value) {
+                              setState(() => _routeMode = value.first);
+                              if (_selectedDestination != null) {
+                                _startNavigationTo(LatLng(_selectedDestination!.lat, _selectedDestination!.lng), _selectedDestination!.name);
+                              } else if (_selectedPoi != null) {
+                                _startNavigationTo(LatLng(_selectedPoi!.lat, _selectedPoi!.lng), _selectedPoi!.name);
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ],
@@ -643,23 +697,15 @@ class _MapScreenState extends State<MapScreen> {
                 ),
                 const SizedBox(height: 8),
                 _MapFab(
-                  icon: Icons.my_location_rounded,
-                  onTap: () {
-                    setState(
-                      () => _currentLocation = _mapController.camera.center,
-                    );
-                    _mapController.move(
-                      _currentLocation,
-                      _mapController.camera.zoom < 8
-                          ? 8
-                          : _mapController.camera.zoom,
-                    );
-                  },
+                  icon: _isTracking ? Icons.explore_rounded : Icons.my_location_rounded,
+                  color: _isTracking ? EthioColors.secondary : Colors.white,
+                  iconColor: _isTracking ? Colors.white : EthioColors.primary,
+                  onTap: _toggleTracking,
                 ),
               ],
             ),
           ),
-          if (_turnByTurnSteps.isNotEmpty)
+          if (_turnByTurnSteps.isNotEmpty || _isLoadingRoute)
             Positioned(
               left: 16,
               right: 16,
@@ -676,16 +722,18 @@ class _MapScreenState extends State<MapScreen> {
                     color: EthioColors.outline.withValues(alpha: 0.15),
                   ),
                 ),
-                child: ListView.builder(
-                  itemCount: _turnByTurnSteps.length,
-                  itemBuilder: (context, i) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Text(
-                      '${i + 1}. ${_turnByTurnSteps[i]}',
-                      style: const TextStyle(fontSize: 12.5),
+                child: _isLoadingRoute 
+                  ? const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator()))
+                  : ListView.builder(
+                      itemCount: _turnByTurnSteps.length,
+                      itemBuilder: (context, i) => Padding(
+                        padding: const EdgeInsets.only(bottom: 6),
+                        child: Text(
+                          '${i + 1}. ${_turnByTurnSteps[i]}',
+                          style: const TextStyle(fontSize: 12.5),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
               ),
             ),
           AnimatedPositioned(
@@ -1098,9 +1146,17 @@ class _LegendItem extends StatelessWidget {
 }
 
 class _MapFab extends StatelessWidget {
-  const _MapFab({required this.icon, required this.onTap});
+  const _MapFab({
+    required this.icon,
+    required this.onTap,
+    this.color = EthioColors.surfaceContainerLowest,
+    this.iconColor = EthioColors.ink,
+  });
+
   final IconData icon;
   final VoidCallback onTap;
+  final Color color;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -1110,7 +1166,7 @@ class _MapFab extends StatelessWidget {
         width: 46,
         height: 46,
         decoration: BoxDecoration(
-          color: EthioColors.surfaceContainerLowest,
+          color: color,
           shape: BoxShape.circle,
           border: Border.all(
             color: EthioColors.outline.withValues(alpha: 0.12),
@@ -1123,7 +1179,7 @@ class _MapFab extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(icon, color: EthioColors.ink, size: 20),
+        child: Icon(icon, color: iconColor, size: 20),
       ),
     );
   }

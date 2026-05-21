@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'smart_travel_features_screen.dart';
 import '../widgets/ui_components.dart';
 
 class TravelToolkitScreen extends StatefulWidget {
@@ -11,32 +10,26 @@ class TravelToolkitScreen extends StatefulWidget {
 }
 
 class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
-  static const double _usdToEtb = 56.8;
-  static const double _eurToEtb = 61.3;
-  static const double _gbpToEtb = 71.2;
-  static const String _ratesUpdated = 'May 1, 2026';
+  static const double _usdToEtb = 156.8;
+  static const double _eurToEtb = 161.3;
+  static const double _gbpToEtb = 171.2;
+  static const String _ratesUpdated = 'May 21, 2026';
 
-  final TextEditingController _currencyCtrl = TextEditingController(
-    text: '100',
-  );
+  final TextEditingController _currencyCtrl = TextEditingController(text: '100');
   final TextEditingController _expenseNameCtrl = TextEditingController();
   final TextEditingController _expenseAmountCtrl = TextEditingController();
-  final TextEditingController _assistantCtrl = TextEditingController();
 
   String _fromCurrency = 'USD';
   final List<_ExpenseItem> _expenses = [
     const _ExpenseItem(category: 'Transport', amount: 1800),
     const _ExpenseItem(category: 'Meals', amount: 950),
   ];
-  String _assistantAnswer =
-      'Ask: "What is this place?", "Best time to visit?", or "I have 1 day in Addis."';
 
   @override
   void dispose() {
     _currencyCtrl.dispose();
     _expenseNameCtrl.dispose();
     _expenseAmountCtrl.dispose();
-    _assistantCtrl.dispose();
     super.dispose();
   }
 
@@ -62,72 +55,6 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
         children: [
-          _sectionTitle('Toolkit Navigator'),
-          _toolNavCard(
-            title: 'Money Tools',
-            subtitle: 'Open currency converter and expense tracker',
-            icon: Icons.account_balance_wallet_rounded,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => Scaffold(
-                  appBar: AppBar(title: const Text('Money Tools')),
-                  body: ListView(
-                    padding: const EdgeInsets.all(20),
-                    children: [
-                      _CurrencyCard(
-                        amountController: _currencyCtrl,
-                        fromCurrency: _fromCurrency,
-                        convertedEtb: converted,
-                        lastUpdated: _ratesUpdated,
-                        onCurrencyChanged: (value) => setState(() => _fromCurrency = value),
-                        onAmountChanged: (_) => setState(() {}),
-                      ),
-                      const SizedBox(height: 12),
-                      _ExpenseCard(
-                        expenses: _expenses,
-                        totalExpense: totalExpense,
-                        nameController: _expenseNameCtrl,
-                        amountController: _expenseAmountCtrl,
-                        onAddExpense: _addExpense,
-                        onDeleteExpense: _removeExpense,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          _toolNavCard(
-            title: 'Phrasebook & Smart Tools',
-            subtitle: 'Open voice phrasebook and smart travel features',
-            icon: Icons.record_voice_over_rounded,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const SmartTravelFeaturesScreen()),
-            ),
-          ),
-          const SizedBox(height: 10),
-          _toolNavCard(
-            title: 'Offline Assistant',
-            subtitle: 'Ask travel questions in offline mode',
-            icon: Icons.smart_toy_rounded,
-            onTap: () => showModalBottomSheet<void>(
-              context: context,
-              isScrollControlled: true,
-              builder: (_) => Padding(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 20),
-                child: _AssistantCard(
-                  controller: _assistantCtrl,
-                  answer: _assistantAnswer,
-                  onAsk: () {
-                    _handleAssistantPrompt();
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 24),
           _sectionTitle('Money Tools'),
           _CurrencyCard(
             amountController: _currencyCtrl,
@@ -181,46 +108,6 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
             ],
           ),
           const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const SmartTravelFeaturesScreen(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.auto_awesome_rounded),
-            label: const Text('Open Smart Travel Features'),
-          ),
-          const SizedBox(height: 24),
-          _sectionTitle('AI Travel Assistant (Offline Mode)'),
-          _AssistantCard(
-            controller: _assistantCtrl,
-            answer: _assistantAnswer,
-            onAsk: _handleAssistantPrompt,
-          ),
-          const SizedBox(height: 24),
-          _sectionTitle('Stories & Culture'),
-          const _StoryCard(
-            title: 'Lalibela: Stone and Faith',
-            subtitle: 'Short Story',
-            body:
-                'Local elders say Lalibela was carved with both human devotion and angelic help. Walking the sunken corridors at dawn, you feel how faith shaped not only churches, but an entire way of seeing time and community.',
-          ),
-          const SizedBox(height: 10),
-          const _StoryCard(
-            title: 'Harar Hyena Tradition',
-            subtitle: 'Myth & Tradition',
-            body:
-                'In Harar, feeding hyenas is tied to stories of peace between town and wilderness. The ritual blends courage, humor, and respect for nature, and many families pass the role through generations.',
-          ),
-          const SizedBox(height: 10),
-          const _StoryCard(
-            title: 'Timkat and Meskel',
-            subtitle: 'Festival Mini Documentary',
-            body:
-                'Timkat (January 19) and Meskel (September 27) transform cities into open-air stages of procession, drums, and white-robed pilgrims. Use destination galleries in this app as your photo-backed mini documentary archive.',
-          ),
         ],
       ),
     );
@@ -232,46 +119,6 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
       child: Text(
         title,
         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
-      ),
-    );
-  }
-
-  Widget _toolNavCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    final scheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(18),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: scheme.surfaceContainerLowest,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              backgroundColor: scheme.primaryContainer.withValues(alpha: 0.30),
-              child: Icon(icon, color: scheme.primary),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-                  Text(subtitle, style: TextStyle(fontSize: 12, color: scheme.onSurface.withValues(alpha: 0.55))),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios_rounded, size: 14, color: scheme.onSurface.withValues(alpha: 0.4)),
-          ],
-        ),
       ),
     );
   }
@@ -291,7 +138,6 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
     final name = _expenseNameCtrl.text.trim();
     final amount = double.tryParse(_expenseAmountCtrl.text.trim()) ?? 0;
     if (name.isEmpty || amount <= 0) return;
-
     setState(() {
       _expenses.add(_ExpenseItem(category: name, amount: amount));
       _expenseNameCtrl.clear();
@@ -304,32 +150,9 @@ class _TravelToolkitScreenState extends State<TravelToolkitScreen> {
       _expenses.removeAt(index);
     });
   }
-
-  void _handleAssistantPrompt() {
-    final q = _assistantCtrl.text.toLowerCase();
-    String response;
-
-    if (q.contains('best time')) {
-      response =
-          'Best overall season is October to March for clear skies and easier road trips.';
-    } else if (q.contains('1 day') && q.contains('addis')) {
-      response =
-          '1-day Addis plan: National Museum, lunch at a traditional restaurant, Mercato walk, then evening coffee ceremony.';
-    } else if (q.contains('what is this place') || q.contains('lalibela')) {
-      response =
-          'Lalibela is a 12th-13th century pilgrimage town known for monolithic churches carved into volcanic rock.';
-    } else if (q.contains('safety')) {
-      response =
-          'Keep emergency contacts offline, avoid remote night travel, and use licensed guides in mountain/desert areas.';
-    } else {
-      response =
-          'Try specific prompts like: "Best time to visit Simien?" or "I have 2 days in Gondar."';
-    }
-
-    setState(() => _assistantAnswer = response);
-  }
 }
 
+// ── Currency Card ─────────────────────────────────────────────────────────────
 class _CurrencyCard extends StatelessWidget {
   const _CurrencyCard({
     required this.amountController,
@@ -411,6 +234,7 @@ class _CurrencyCard extends StatelessWidget {
   }
 }
 
+// ── Expense Card ──────────────────────────────────────────────────────────────
 class _ExpenseCard extends StatelessWidget {
   const _ExpenseCard({
     required this.expenses,
@@ -471,10 +295,7 @@ class _ExpenseCard extends StatelessWidget {
               const SizedBox(width: 8),
               IconButton(
                 onPressed: onAddExpense,
-                icon: Icon(
-                  Icons.add_circle_rounded,
-                  color: scheme.secondary,
-                ),
+                icon: Icon(Icons.add_circle_rounded, color: scheme.secondary),
               ),
             ],
           ),
@@ -507,62 +328,7 @@ class _ExpenseCard extends StatelessWidget {
   }
 }
 
-class _AssistantCard extends StatelessWidget {
-  const _AssistantCard({
-    required this.controller,
-    required this.answer,
-    required this.onAsk,
-  });
-
-  final TextEditingController controller;
-  final String answer;
-  final VoidCallback onAsk;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: scheme.tertiary.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.smart_toy_rounded, color: scheme.tertiary),
-              const SizedBox(width: 8),
-              const Text(
-                'Ask Offline Assistant',
-                style: TextStyle(fontWeight: FontWeight.w800),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Ask a travel question',
-              suffixIcon: Icon(Icons.wifi_off_rounded),
-            ),
-          ),
-          const SizedBox(height: 10),
-          FilledButton.icon(
-            onPressed: onAsk,
-            icon: const Icon(Icons.auto_awesome_rounded, size: 18),
-            label: const Text('Get Answer'),
-          ),
-          const SizedBox(height: 10),
-          Text(answer),
-        ],
-      ),
-    );
-  }
-}
-
+// ── Simple List Card ──────────────────────────────────────────────────────────
 class _SimpleListCard extends StatelessWidget {
   const _SimpleListCard({
     required this.icon,
@@ -595,10 +361,7 @@ class _SimpleListCard extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                ),
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
             ],
           ),
@@ -621,51 +384,7 @@ class _SimpleListCard extends StatelessWidget {
   }
 }
 
-class _StoryCard extends StatelessWidget {
-  const _StoryCard({
-    required this.title,
-    required this.subtitle,
-    required this.body,
-  });
-
-  final String title;
-  final String subtitle;
-  final String body;
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: scheme.outline.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            subtitle,
-            style: TextStyle(
-              fontSize: 12,
-              color: scheme.onSurface.withValues(alpha: 0.55),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            title,
-            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          Text(body),
-        ],
-      ),
-    );
-  }
-}
-
+// ── Expense Item Model ────────────────────────────────────────────────────────
 class _ExpenseItem {
   const _ExpenseItem({required this.category, required this.amount});
 
